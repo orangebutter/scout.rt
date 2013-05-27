@@ -12,6 +12,7 @@ package org.eclipse.scout.jaxws.internal;
 
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,12 +24,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.handler.Handler;
 
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.scout.commons.CompareUtility;
 import org.eclipse.scout.commons.FileUtility;
 import org.eclipse.scout.commons.IOUtility;
 import org.eclipse.scout.commons.StringUtility;
+import org.eclipse.scout.commons.UriBuilder;
 import org.eclipse.scout.commons.logger.IScoutLogger;
 import org.eclipse.scout.commons.logger.ScoutLogManager;
 import org.eclipse.scout.jaxws.Activator;
@@ -109,7 +112,14 @@ public class JaxWsEndpointService extends AbstractService implements IJaxWsEndpo
     if (!StringUtility.hasText(pathInfo)) {
       // ensure proper resource loading if trailing slash is missing
       response.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
-      response.setHeader("Location", new Path(JaxWsHelper.getBaseAddress(request, false)).append(request.getRequestURI()).addTrailingSeparator().toString());
+
+      final String baseUrl = JaxWsHelper.getBaseAddress(request, false);
+      IPath contextPath = new Path(request.getRequestURI()).addTrailingSeparator().makeAbsolute();
+      if (contextPath.isUNC()) {
+        contextPath = contextPath.makeUNC(false);
+      }
+      final URI redirectUri = new UriBuilder(baseUrl).path(contextPath.toString()).createURI();
+      response.setHeader("Location", redirectUri.toString());
       return;
     }
 
@@ -137,15 +147,15 @@ public class JaxWsEndpointService extends AbstractService implements IJaxWsEndpo
       }
     }
 
-    response.getOutputStream().write(content);
-    response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentLength(content.length);
-
     String contentType = FileUtility.getContentTypeForExtension(new Path(pathInfo).getFileExtension());
     if (contentType == null) {
       contentType = "application/unknown";
     }
     response.setContentType(contentType);
+    response.setContentLength(content.length);
+
+    response.setStatus(HttpServletResponse.SC_OK);
+    response.getOutputStream().write(content);
   }
 
   protected String createHtmlStatusPage(final String contextPath, final ServletAdapter[] servletAdapters) throws Exception {

@@ -71,6 +71,7 @@ import org.eclipse.scout.rt.ui.swt.keystroke.ISwtKeyStrokeFilter;
 import org.eclipse.scout.rt.ui.swt.keystroke.KeyStrokeManager;
 import org.eclipse.scout.rt.ui.swt.util.ColorFactory;
 import org.eclipse.scout.rt.ui.swt.util.FontRegistry;
+import org.eclipse.scout.rt.ui.swt.util.ISwtIconLocator;
 import org.eclipse.scout.rt.ui.swt.util.ScoutFormToolkit;
 import org.eclipse.scout.rt.ui.swt.util.SwtIconLocator;
 import org.eclipse.scout.rt.ui.swt.util.SwtUtility;
@@ -153,7 +154,7 @@ public abstract class AbstractSwtEnvironment extends AbstractPropertyObserver im
   private Clipboard m_clipboard;
   private ColorFactory m_colorFactory;
   private FontRegistry m_fontRegistry;
-  private SwtIconLocator m_iconLocator;
+  private ISwtIconLocator m_iconLocator;
   private ISwtScoutTray m_trayComposite;
 
   private List<ISwtKeyStroke> m_desktopKeyStrokes;
@@ -1409,7 +1410,7 @@ public abstract class AbstractSwtEnvironment extends AbstractPropertyObserver im
 
   // GUI FACTORY
 
-  protected SwtIconLocator createIconLocator() {
+  protected ISwtIconLocator createIconLocator() {
     return new SwtIconLocator(getClientSession().getIconLocator());
   }
 

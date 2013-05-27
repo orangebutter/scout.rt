@@ -27,6 +27,8 @@ import org.eclipse.scout.commons.job.JobEx;
 import org.eclipse.scout.rt.client.IClientSession;
 import org.eclipse.scout.rt.client.ui.action.IAction;
 import org.eclipse.scout.rt.client.ui.basic.filechooser.IFileChooser;
+import org.eclipse.scout.rt.client.ui.basic.table.ITable;
+import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.desktop.IDesktop;
 import org.eclipse.scout.rt.client.ui.form.FormEvent;
 import org.eclipse.scout.rt.client.ui.form.IForm;
@@ -34,6 +36,8 @@ import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.groupbox.IGroupBox;
 import org.eclipse.scout.rt.client.ui.messagebox.IMessageBox;
 import org.eclipse.scout.rt.ui.swing.action.ISwingScoutAction;
+import org.eclipse.scout.rt.ui.swing.basic.table.ISwingScoutTable;
+import org.eclipse.scout.rt.ui.swing.basic.table.SwingTableColumn;
 import org.eclipse.scout.rt.ui.swing.ext.JDialogEx;
 import org.eclipse.scout.rt.ui.swing.ext.JStatusLabelEx;
 import org.eclipse.scout.rt.ui.swing.form.ISwingScoutForm;
@@ -370,8 +374,7 @@ public interface ISwingEnvironment {
 
   /**
    * Use this decorator to complete and style (incomplete) client html text for html and label fields in order to match
-   * current style
-   * sheet settings based on a {@link component}s font and color
+   * current style sheet settings based on a {@link component}s font and color.
    */
   String styleHtmlText(ISwingScoutFormField<?> uiComposite, String rawHtml);
 
@@ -382,12 +385,41 @@ public interface ISwingEnvironment {
   FormEvent[] fetchPendingPrintEvents(IForm form);
 
   /**
-   * Enables customization of JDialogEx by returning subtypes
+   * Enables customization of JDialogEx by returning subtypes.
+   * 
+   * @return
    */
   JDialogEx createJDialogEx(Dialog swingParent);
 
   /**
-   * Enables customization of JDialogEx by returning subtypes
+   * Enables customization of JDialogEx by returning subtypes.
+   * 
+   * @return
    */
   JDialogEx createJDialogEx(Frame swingParent);
+
+  /**
+   * Creates a swing scout table instance for the given table model. The default implementation returns a
+   * SwingScoutTable instance.
+   * 
+   * @param table
+   *          Table model
+   * @return
+   * @since 3.9.0
+   */
+  ISwingScoutTable createTable(ITable table);
+
+  /**
+   * Creates a swing scout table column instance for the given column model. The default implementation returns a
+   * SwingTableColumn instance.
+   * 
+   * @param swingModelIndex
+   *          modelIndex used to create the swing {@link javax.swing.table.TableColumn TableColumn}
+   * @param scoutColumn
+   *          the corresponding scout table column
+   * @return
+   * @since 3.9.0
+   */
+  SwingTableColumn createColumn(int swingModelIndex, IColumn scoutColumn);
+
 }

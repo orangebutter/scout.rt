@@ -13,7 +13,8 @@ import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.commons.exception.ProcessingStatus;
 import org.eclipse.scout.commons.logger.IScoutLogger;
 import org.eclipse.scout.commons.logger.ScoutLogManager;
-import org.eclipse.scout.rt.client.mobile.transformation.IDeviceTransformationService;
+import org.eclipse.scout.rt.client.mobile.transformation.DeviceTransformationConfig;
+import org.eclipse.scout.rt.client.mobile.transformation.DeviceTransformationUtility;
 import org.eclipse.scout.rt.client.mobile.transformation.MobileDeviceTransformation;
 import org.eclipse.scout.rt.client.mobile.ui.basic.table.AbstractMobileTable;
 import org.eclipse.scout.rt.client.mobile.ui.basic.table.DrillDownStyleMap;
@@ -73,6 +74,20 @@ public class PageForm extends AbstractMobileForm implements IPageForm {
     initMainButtons();
     callInitializer();
     initFields();
+  }
+
+  @Override
+  public void initForm() throws ProcessingException {
+    // form
+    initFormInternal();
+
+    // fields
+    PageFormInitFieldVisitor v = new PageFormInitFieldVisitor();
+    visitFields(v);
+    v.handleResult();
+
+    // custom
+    execInitForm();
   }
 
   @Override
@@ -236,9 +251,9 @@ public class PageForm extends AbstractMobileForm implements IPageForm {
       getPageTableGroupBox().setBorderVisible(false);
 
       //If there is just the table, the form itself does not need to be scrollable because the table already is
-      IDeviceTransformationService service = SERVICES.getService(IDeviceTransformationService.class);
-      if (service != null && service.getDeviceTransformer() != null) {
-        service.getDeviceTransformer().getDeviceTransformationExcluder().excludeFieldTransformation(getRootGroupBox(), MobileDeviceTransformation.MAKE_MAINBOX_SCROLLABLE);
+      DeviceTransformationConfig config = DeviceTransformationUtility.getDeviceTransformationConfig();
+      if (config != null) {
+        config.excludeFieldTransformation(getRootGroupBox(), MobileDeviceTransformation.MAKE_MAINBOX_SCROLLABLE);
       }
     }
   }
@@ -248,11 +263,6 @@ public class PageForm extends AbstractMobileForm implements IPageForm {
     removeTableListener();
     for (AutoLeafPageWithNodes autoLeafPage : m_autoLeafPageMap.values()) {
       disposeAutoLeafPage(autoLeafPage);
-    }
-
-    if (m_page != null && m_page.getDetailForm() != null) {
-      m_page.getDetailForm().doClose();
-      m_page.setDetailForm(null);
     }
   }
 
@@ -403,6 +413,23 @@ public class PageForm extends AbstractMobileForm implements IPageForm {
         selectPageTableRowIfNecessary(pageTable);
       }
     }
+  }
+
+  @Override
+  public boolean isDirty() {
+    if (m_pageFormConfig.isDetailFormVisible()) {
+      if (m_page.getDetailForm() != getPageDetailFormField().getInnerForm()) {
+        return true;
+      }
+    }
+    if (m_pageFormConfig.isTablePageAllowed() && m_page instanceof IPageWithTable) {
+      ITable pageTable = ((IPageWithTable) m_page).getTable();
+      if (pageTable != getPageTableField().getTable()) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   @Order(10.0f)

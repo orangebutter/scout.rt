@@ -30,11 +30,11 @@ import javax.swing.table.JTableHeader;
 
 import org.eclipse.scout.commons.OptimisticLock;
 import org.eclipse.scout.rt.client.ui.basic.activitymap.IActivityMap;
+import org.eclipse.scout.rt.client.ui.basic.table.ITable;
 import org.eclipse.scout.rt.client.ui.form.fields.plannerfield.IPlannerField;
 import org.eclipse.scout.rt.ui.swing.SwingUtility;
 import org.eclipse.scout.rt.ui.swing.basic.activitymap.SwingScoutActivityMap;
 import org.eclipse.scout.rt.ui.swing.basic.table.ISwingScoutTable;
-import org.eclipse.scout.rt.ui.swing.basic.table.SwingScoutTable;
 import org.eclipse.scout.rt.ui.swing.ext.JPanelEx;
 import org.eclipse.scout.rt.ui.swing.ext.calendar.CalendarViewEvent;
 import org.eclipse.scout.rt.ui.swing.ext.calendar.CalendarViewListener;
@@ -43,7 +43,7 @@ import org.eclipse.scout.rt.ui.swing.form.fields.SwingScoutFieldComposite;
 import org.eclipse.scout.rt.ui.swing.form.fields.plannerfield.layout.PlannerFieldLayout;
 import org.eclipse.scout.rt.ui.swing.form.fields.plannerfield.layout.PlannerFieldLayoutConstraints;
 
-public class SwingScoutPlannerField extends SwingScoutFieldComposite<IPlannerField<?, ?>> implements ISwingScoutPlannerField {
+public class SwingScoutPlannerField extends SwingScoutFieldComposite<IPlannerField<?, ?, ?, ?>> implements ISwingScoutPlannerField {
   private ISwingScoutTable m_resourceTableComposite;
   private SwingScoutActivityMap m_activityMapComposite;
   private DateChooser[] m_miniDateChooser;
@@ -58,8 +58,9 @@ public class SwingScoutPlannerField extends SwingScoutFieldComposite<IPlannerFie
   protected void initializeSwing() {
     JPanel container = new JPanel(new PlannerFieldLayout(getSwingEnvironment(), getScoutObject().getGridData()));
     container.setOpaque(false);
-    m_resourceTableComposite = new SwingScoutTable();
-    m_resourceTableComposite.createField(getScoutObject().getResourceTable(), getSwingEnvironment());
+    ITable scoutTable = getScoutObject().getResourceTable();
+    m_resourceTableComposite = getSwingEnvironment().createTable(scoutTable);
+    m_resourceTableComposite.createField(scoutTable, getSwingEnvironment());
     JTableHeader h = m_resourceTableComposite.getSwingTable().getTableHeader();
     if (h != null) {
       h.setPreferredSize(new Dimension(h.getPreferredSize().width, h.getFontMetrics(h.getFont()).getHeight() * 5 / 2));

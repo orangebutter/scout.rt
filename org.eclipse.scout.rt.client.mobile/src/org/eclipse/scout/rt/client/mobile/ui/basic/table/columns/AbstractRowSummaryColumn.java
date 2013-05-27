@@ -38,8 +38,8 @@ import org.eclipse.scout.service.SERVICES;
 public class AbstractRowSummaryColumn extends AbstractStringColumn implements IRowSummaryColumn {
   private boolean m_initialized;
 
-  private IColumn m_cellHeaderColumn;
-  private List<IColumn> m_cellDetailColumns;
+  private IColumn<?> m_cellHeaderColumn;
+  private List<IColumn<?>> m_cellDetailColumns;
   private String m_htmlCellTemplate;
   private String m_htmlDrillDown;
   private String m_htmlDrillDownButton;
@@ -139,7 +139,7 @@ public class AbstractRowSummaryColumn extends AbstractStringColumn implements IR
    */
   public void initializeDecorationConfiguration(ITable table, int maxCellDetailColumns) {
     m_cellHeaderColumn = null;
-    m_cellDetailColumns = new ArrayList<IColumn>(maxCellDetailColumns);
+    m_cellDetailColumns = new ArrayList<IColumn<?>>(maxCellDetailColumns);
 
     for (IColumn<?> column : table.getColumnSet().getVisibleColumns()) {
       if (m_cellDetailColumns.size() >= maxCellDetailColumns) {
@@ -210,7 +210,7 @@ public class AbstractRowSummaryColumn extends AbstractStringColumn implements IR
    * be the job of the GUI, but it seems not to be possible with the list widget of rap.
    */
   private String addGridLine(String existingHtml) {
-    String borderDivStart = "<div style=\"position: absolute; width: 100%; height: 100%; border-bottom:1px solid #e1efec\">";
+    String borderDivStart = "<div style=\"width: 100%; height: 100%; border-bottom:1px solid #e1efec\">";
     String borderDivEnd = "</div>";
     String prePart = "";
     String mainPart = "";

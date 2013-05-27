@@ -6,22 +6,23 @@
       <repository id="eclipse_kepler" location="http://download.eclipse.org/releases/kepler/"/>
 
       <unit id="org.eclipse.platform.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.platform.source.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.pde.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.pde.source.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.jdt.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.jdt.source.feature.group" version="0.0.0"/>
+
+      <unit id="org.eclipse.equinox.serverside.sdk.feature.group" version="0.0.0"/>
+
       <unit id="org.eclipse.emf.common.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.emf.ecore.feature.group" version="0.0.0"/>
     </location>
 
     <location includeAllPlatforms="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-      <repository id="eclipse_egit" location="http://download.eclipse.org/egit/updates/"/>
+      <repository id="orbit_R" location="http://download.eclipse.org/tools/orbit/downloads/drops/R20130517111416/repository/"/>
 
-      <unit id="org.eclipse.egit.feature.group" version="0.0.0"/>
-      <unit id="org.eclipse.jgit.feature.group" version="0.0.0"/>
-    </location>
-
-    <location includeAllPlatforms="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-      <repository id="orbit_S20130308121626" location="http://download.eclipse.org/tools/orbit/downloads/drops/S20130308121626/repository/"/>
-
+      <unit id="javax.servlet" version="3.0.0.v201112011016"/>
+      <unit id="javax.servlet.source" version="3.0.0.v201112011016"/>
       <unit id="javax.wsdl" version="1.6.2.v201012040545"/>
       <unit id="javax.wsdl.source" version="1.6.2.v201012040545"/>
       <unit id="javax.xml" version="1.3.4.v201005080400"/>
@@ -62,6 +63,10 @@
       <unit id="org.apache.xerces" version="2.9.0.v201101211617"/>
       <unit id="org.apache.xml.resolver" version="1.2.0.v201005080400"/>
       <unit id="org.apache.xml.serializer" version="2.7.1.v201005080400"/>
+      <unit id="org.junit" version="4.11.0.v201303080030"/>
+      <unit id="org.junit.source" version="4.11.0.v201303080030"/>
+      <unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
+      <unit id="org.hamcrest.core.source" version="1.3.0.v201303031735"/>
       <unit id="org.easymock" version="2.4.0.v20090202-0900"/>
       <unit id="org.easymock.source" version="2.4.0.v20090202-0900"/>
       <unit id="org.json" version="1.0.0.v201011060100"/>
@@ -77,9 +82,8 @@
       <unit id="com.google.guava.source" version="12.0.0.v201212092141"/>
     </location>
     <location includeAllPlatforms="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-      <repository id="rap_2.0" location="http://download.eclipse.org/rt/rap/nightly/runtime/"/>
+      <repository id="rap_2.1" location="http://download.eclipse.org/rt/rap/2.1/RC1-20130520-1326/"/>
 
-      <unit id="org.eclipse.rap.equinox.target.feature.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.rap.feature.feature.group" version="0.0.0"/>
     </location>
     <location includeAllPlatforms="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
@@ -91,8 +95,16 @@
       <repository id="scout_nightly" location="http://download.eclipse.org/scout/nightly"/>
 
       <unit id="org.eclipse.scout.rt.source.feature.group" version="0.0.0"/>
-      <unit id="org.eclipse.scout.rt.rap.source.feature.group" version="0.0.0"/>
       <unit id="org.eclipse.scout.rt.testing.source.feature.group" version="0.0.0"/>
+
+      <unit id="org.eclipse.scout.rt.rap.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.scout.rt.rap.testing.source.feature.group" version="0.0.0"/>
+
+      <unit id="org.eclipse.scout.rt.ui.rap.incubator.filechooser.source.feature.group" version="0.0.0"/>
+
+      <unit id="org.eclipse.scout.sdk.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.scout.sdk.rap.source.feature.group" version="0.0.0"/>
+      <unit id="org.eclipse.scout.sdk.testing.source.feature.group" version="0.0.0"/>
     </location>
   </locations>
 </target>
