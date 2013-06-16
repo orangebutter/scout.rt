@@ -163,7 +163,13 @@ public class SwtScoutTableModel implements IStructuredContentProvider, ITableCol
       return null;
     }
     Image emptyImage = new Image(display, width, height);
-    ImageData imageData = emptyImage.getImageData();
+    ImageData imageData;
+    try {
+      imageData = emptyImage.getImageData();
+    }
+    finally {
+      emptyImage.dispose();
+    }
     for (int i = 0; i < imageData.width; i++) {
       for (int j = 0; j < imageData.height; j++) {
         imageData.setAlpha(i, j, 0);
