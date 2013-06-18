@@ -54,7 +54,7 @@ public class DateAndTimeFieldParseTest extends Assert {
     protected void execInitForm() throws ProcessingException {
       for (IFormField f : getAllFields()) {
         if (f instanceof IDateField) {
-          ((IDateField) f).setAutoTimeMillis(0, 0, 0);
+          ((IDateField) f).setAutoTimeMillis(12, 34, 56);
         }
       }
     }
@@ -122,6 +122,7 @@ public class DateAndTimeFieldParseTest extends Assert {
           protected boolean getConfiguredHasTime() {
             return true;
           }
+
         }
 
         @Order(30)
@@ -271,10 +272,10 @@ public class DateAndTimeFieldParseTest extends Assert {
       expectError(testField, "22.10.");
       expectError(testField, "2017.10.22");
       expectError(testField, "20171022");
-      expectSuccess(testField, "22.10.2017", "22.10.17 00:00");
-      expectSuccess(testField, "22102017", "22.10.17 00:00");
-      expectSuccess(testField, "221017", "22.10.17 00:00");
-      expectSuccess(testField, "22,10,2017", "22.10.17 00:00");
+      expectSuccess(testField, "22.10.2017", "22.10.17 12:34");
+      expectSuccess(testField, "22102017", "22.10.17 12:34");
+      expectSuccess(testField, "221017", "22.10.17 12:34");
+      expectSuccess(testField, "22,10,2017", "22.10.17 12:34");
       expectSuccess(testField, "22.10.2017 1314", "22.10.17 13:14");
       expectSuccess(testField, "22.10.2017 13:14", "22.10.17 13:14");
       expectSuccess(testField, "22.10.17 13:14", "22.10.17 13:14");
@@ -288,7 +289,7 @@ public class DateAndTimeFieldParseTest extends Assert {
     expectError(testField, "2017.10.22");
     expectError(testField, "22102017");
     expectError(testField, "10,22,2017");
-    expectSuccess(testField, "10/22/2017", "10/22/17 12:00 AM");
+    expectSuccess(testField, "10/22/2017", "10/22/17 12:34 PM");
     expectSuccess(testField, "10/22/2017 13:14", "10/22/17 1:14 PM");
     expectSuccess(testField, "10/22/2017 1:14 PM", "10/22/17 1:14 PM");
   }
@@ -303,10 +304,10 @@ public class DateAndTimeFieldParseTest extends Assert {
       expectError(testField, "22.10.");
       expectError(testField, "2017.10.22");
       expectError(testField, "20171022");
-      expectSuccess(testField, "22.10.2017", "2017-10-22@00.00.00");
-      expectSuccess(testField, "22102017", "2017-10-22@00.00.00");
-      expectSuccess(testField, "221017", "2017-10-22@00.00.00");
-      expectSuccess(testField, "22,10,2017", "2017-10-22@00.00.00");
+      expectSuccess(testField, "22.10.2017", "2017-10-22@12.34.56");
+      expectSuccess(testField, "22102017", "2017-10-22@12.34.56");
+      expectSuccess(testField, "221017", "2017-10-22@12.34.56");
+      expectSuccess(testField, "22,10,2017", "2017-10-22@12.34.56");
       expectSuccess(testField, "2017-10-22@00.00.00", "2017-10-22@00.00.00");
     }
     LocaleThreadLocal.set(new Locale("en", "US"));
@@ -316,7 +317,7 @@ public class DateAndTimeFieldParseTest extends Assert {
     expectError(testField, "2017.10.22");
     expectError(testField, "22102017");
     expectError(testField, "10,22,2017");
-    expectSuccess(testField, "10/22/2017", "2017-10-22@00.00.00");
+    expectSuccess(testField, "10/22/2017", "2017-10-22@12.34.56");
     expectSuccess(testField, "2017-10-22@00.00.00", "2017-10-22@00.00.00");
   }
 
