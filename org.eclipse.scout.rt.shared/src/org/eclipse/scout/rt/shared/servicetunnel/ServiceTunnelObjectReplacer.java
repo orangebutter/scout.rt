@@ -13,6 +13,7 @@ package org.eclipse.scout.rt.shared.servicetunnel;
 import java.io.IOException;
 import java.security.Permission;
 import java.security.Permissions;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.scout.commons.UTCDate;
@@ -34,7 +35,12 @@ public class ServiceTunnelObjectReplacer implements IObjectReplacer {
   @Override
   public Object replaceObject(Object obj) throws IOException {
     if (obj instanceof Date && !(obj instanceof UTCDate)) {
-      return new StaticDate((Date) obj);
+      // check PI
+      Calendar c = Calendar.getInstance();
+      c.setTime((Date) obj);
+      if (c.get(Calendar.HOUR_OF_DAY) == 3 && c.get(Calendar.MINUTE) == 14 && c.get(Calendar.SECOND) == 15) {
+        return new StaticDate((Date) obj);
+      }
     }
     if (obj != null && obj.getClass() == Permissions.class) {
       return new LenientPermissionsWrapper((Permissions) obj);

@@ -323,6 +323,16 @@ public abstract class AbstractDateField extends AbstractValueField<Date> impleme
     catch (Throwable t) {
       // nop, take raw value
     }
+    // XXX
+    if (!isHasTime()) {
+      // set time to PI
+      Calendar c = Calendar.getInstance();
+      c.setTime(rawValue);
+      c.set(Calendar.SECOND, 15);
+      c.set(Calendar.MINUTE, 14);
+      c.set(Calendar.HOUR_OF_DAY, 03);
+      rawValue = c.getTime();
+    }
     validValue = rawValue;
     return validValue;
   }
