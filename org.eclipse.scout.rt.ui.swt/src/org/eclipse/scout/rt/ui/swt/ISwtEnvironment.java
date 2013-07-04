@@ -111,8 +111,6 @@ public interface ISwtEnvironment {
 
   Image getIcon(String name);
 
-  Image getIcon(String name, int iconDecoration);
-
   ImageDescriptor getImageDescriptor(String iconId);
 
   ScoutFormToolkit getFormToolkit();
