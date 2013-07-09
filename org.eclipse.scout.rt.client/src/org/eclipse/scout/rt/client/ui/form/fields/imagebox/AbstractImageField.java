@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.scout.rt.client.ui.form.fields.imagebox;
 
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -26,7 +27,6 @@ import org.eclipse.scout.commons.logger.IScoutLogger;
 import org.eclipse.scout.commons.logger.ScoutLogManager;
 import org.eclipse.scout.rt.client.ui.action.menu.IMenu;
 import org.eclipse.scout.rt.client.ui.form.fields.AbstractFormField;
-import org.eclipse.scout.rt.shared.data.basic.AffineTransformSpec;
 import org.eclipse.scout.rt.shared.data.basic.BoundsSpec;
 
 public abstract class AbstractImageField extends AbstractFormField implements IImageField {
@@ -80,30 +80,6 @@ public abstract class AbstractImageField extends AbstractFormField implements II
     return false;
   }
 
-  @ConfigProperty(ConfigProperty.DOUBLE)
-  @Order(330)
-  @ConfigPropertyValue("1.25")
-  protected double getConfiguredZoomDelta() {
-    return 1.25;
-  }
-
-  @ConfigProperty(ConfigProperty.DOUBLE)
-  @Order(340)
-  @ConfigPropertyValue("10")
-  protected double getConfiguredPanDelta() {
-    return 10;
-  }
-
-  /**
-   * in degrees 0..360
-   */
-  @ConfigProperty(ConfigProperty.DOUBLE)
-  @Order(350)
-  @ConfigPropertyValue("10")
-  protected double getConfiguredRotateDelta() {
-    return 10;
-  }
-
   @ConfigProperty(ConfigProperty.BOOLEAN)
   @Order(360)
   @ConfigPropertyValue("false")
@@ -146,13 +122,10 @@ public abstract class AbstractImageField extends AbstractFormField implements II
   protected void initConfig() {
     m_uiFacade = new P_UIFacade();
     super.initConfig();
-    setImageTransform(new AffineTransformSpec());
+    setAffineTransform(new AffineTransform());
     setAutoFit(getConfiguredAutoFit());
     setFocusVisible(getConfiguredFocusVisible());
     setImageId(getConfiguredImageId());
-    setPanDelta(getConfiguredPanDelta());
-    setRotateDelta(getConfiguredRotateDelta());
-    setZoomDelta(getConfiguredZoomDelta());
     setDragType(getConfiguredDragType());
     setDropType(getConfiguredDropType());
     setScrollBarEnabled(getConfiguredScrollBarEnabled());
@@ -263,48 +236,28 @@ public abstract class AbstractImageField extends AbstractFormField implements II
   }
 
   @Override
-  public double getZoomDeltaValue() {
-    return m_zoomDelta;
+  public void setAffineTransform(AffineTransform t) {
+    propertySupport.setProperty(PROP_IMAGE_TRANSFORM, new AffineTransform(t));
   }
 
   @Override
-  public void setZoomDelta(double d) {
-    m_zoomDelta = d;
+  public AffineTransform getAffineTransform() {
+    return new AffineTransform((AffineTransform) propertySupport.getProperty(PROP_IMAGE_TRANSFORM));
   }
 
   @Override
-  public double getPanDelta() {
-    return m_panDelta;
+  public BoundsSpec getCanvas() {
+    return (BoundsSpec) propertySupport.getProperty(PROP_CANVAS);
   }
 
   @Override
-  public void setPanDelta(double d) {
-    m_panDelta = d;
+  public void setCanvas(int x, int y, int width, int height) {
+    setCanvas(new BoundsSpec(x, y, width, height));
   }
 
   @Override
-  public double getRotateDelta() {
-    return m_rotateDelta;
-  }
-
-  @Override
-  public void setRotateDelta(double deg) {
-    m_rotateDelta = deg;
-  }
-
-  @Override
-  public void setRotateDeltaInRadians(double rad) {
-    setRotateDelta(Math.toDegrees(rad));
-  }
-
-  @Override
-  public AffineTransformSpec getImageTransform() {
-    return new AffineTransformSpec((AffineTransformSpec) propertySupport.getProperty(PROP_IMAGE_TRANSFORM));
-  }
-
-  @Override
-  public void setImageTransform(AffineTransformSpec t) {
-    propertySupport.setProperty(PROP_IMAGE_TRANSFORM, new AffineTransformSpec(t));
+  public void setCanvas(BoundsSpec bounds) {
+    propertySupport.setProperty(PROP_CANVAS, bounds);
   }
 
   @Override
@@ -382,62 +335,6 @@ public abstract class AbstractImageField extends AbstractFormField implements II
     return b;
   }
 
-  @Override
-  public void doAutoFit() {
-    fireAutoFit();
-  }
-
-  @Override
-  public void doZoomRectangle(int x, int y, int w, int h) {
-    fireZoomRectangle(new BoundsSpec(x, y, w, h));
-  }
-
-  @Override
-  public void doPan(double dx, double dy) {
-    AffineTransformSpec t = getImageTransform();
-    t.dx = dx;
-    t.dy = dy;
-    setImageTransform(t);
-  }
-
-  @Override
-  public void doRelativePan(double dx, double dy) {
-    AffineTransformSpec t = getImageTransform();
-    t.dx = t.dx + dx;
-    t.dy = t.dy + dy;
-    setImageTransform(t);
-  }
-
-  @Override
-  public void doZoom(double fx, double fy) {
-    AffineTransformSpec t = getImageTransform();
-    t.sx = fx;
-    t.sy = fy;
-    setImageTransform(t);
-  }
-
-  @Override
-  public void doRelativeZoom(double fx, double fy) {
-    AffineTransformSpec t = getImageTransform();
-    t.sx = t.sx * fx;
-    t.sy = t.sy * fy;
-    setImageTransform(t);
-  }
-
-  @Override
-  public void doRotate(double angle) {
-    AffineTransformSpec t = getImageTransform();
-    t.angle = angle;
-    setImageTransform(t);
-  }
-
-  @Override
-  public void doRelativeRotate(double angleInDegrees) {
-    AffineTransformSpec t = getImageTransform();
-    t.angle = t.angle + Math.toRadians(angleInDegrees);
-    setImageTransform(t);
-  }
-
   /*
    * UI accessible
    */
@@ -449,8 +346,8 @@ public abstract class AbstractImageField extends AbstractFormField implements II
   private class P_UIFacade implements IImageFieldUIFacade {
 
     @Override
-    public void setImageTransformFromUI(AffineTransformSpec t) {
-      setImageTransform(t);
+    public void setAffineTransformFromUI(AffineTransform t) {
+      setAffineTransform(t);
     }
 
     @Override

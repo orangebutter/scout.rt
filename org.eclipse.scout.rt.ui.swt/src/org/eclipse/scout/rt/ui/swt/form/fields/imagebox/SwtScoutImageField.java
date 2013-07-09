@@ -10,6 +10,7 @@
  ******************************************************************************/
 package org.eclipse.scout.rt.ui.swt.form.fields.imagebox;
 
+import java.awt.geom.AffineTransform;
 import java.io.ByteArrayInputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -158,6 +159,11 @@ public class SwtScoutImageField extends SwtScoutFieldComposite<IImageField> impl
     getImageViewer().setAutoFit(getScoutObject().isAutoFit());
   }
 
+  private void updateImageTransformFromScout() {
+    AffineTransform at = getScoutObject().getAffineTransform();
+    getImageViewer().setAffineTransform(at);
+  }
+
   @Override
   protected void handleScoutPropertyChange(String name, Object newValue) {
     if (name.equals(IImageField.PROP_IMAGE_ID) || IImageField.PROP_IMAGE.equals(name)) {
@@ -165,6 +171,9 @@ public class SwtScoutImageField extends SwtScoutFieldComposite<IImageField> impl
     }
     else if (IImageField.PROP_AUTO_FIT.equals(name)) {
       updateAutoFitFromScout();
+    }
+    else if (name.equals(IImageField.PROP_IMAGE_TRANSFORM)) {
+      updateImageTransformFromScout();
     }
     super.handleScoutPropertyChange(name, newValue);
   }
