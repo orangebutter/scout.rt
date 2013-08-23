@@ -193,9 +193,23 @@ public class SwtScoutFileChooserField extends SwtScoutValueFieldComposite<IFileC
           Runnable swtJob = new Runnable() {
             @Override
             public void run() {
-              if (files != null && files.length > 0) {
-                getSwtField().setText(files[0].getAbsolutePath());
-                handleSwtInputVerifier();
+              if (files != null) {
+                if (files.length == 1) {
+                  getSwtField().setText(files[0].getAbsolutePath());
+                  handleSwtInputVerifier();
+                }
+                else if (files.length > 1) {
+                  StringBuilder filesBuilder = new StringBuilder();
+                  for (int i = 0; i < files.length; i++) {
+
+                    filesBuilder.append("\"").append(files[0].getAbsolutePath()).append("\"");
+                    if (i + 1 < files.length) {
+                      filesBuilder.append(" ");
+                    }
+                  }
+                  getSwtField().setText(filesBuilder.toString());
+                  handleSwtInputVerifier();
+                }
               }
             }
           };

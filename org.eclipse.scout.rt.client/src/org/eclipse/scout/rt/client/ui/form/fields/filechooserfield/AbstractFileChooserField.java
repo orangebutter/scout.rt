@@ -126,6 +126,13 @@ public abstract class AbstractFileChooserField extends AbstractValueField<String
     return 4000;
   }
 
+  @ConfigProperty(ConfigProperty.BOOLEAN)
+  @Order(320)
+  @ConfigPropertyValue("false")
+  protected boolean getConfiguredMultiMode() {
+    return false;
+  }
+
   private Class<? extends IMenu>[] getConfiguredMenus() {
     Class<?>[] dca = ConfigurationUtility.getDeclaredPublicClasses(getClass());
     Class<IMenu>[] foca = ConfigurationUtility.sortFilteredClassesByOrderAnnotation(dca, IMenu.class);
@@ -147,6 +154,7 @@ public abstract class AbstractFileChooserField extends AbstractValueField<String
     }
     setFileIconId(getConfiguredFileIconId());
     setMaxLength(getConfiguredMaxLength());
+    setMultiMode(getConfiguredMultiMode());
     // menus
     ArrayList<IMenu> menuList = new ArrayList<IMenu>();
     Class<? extends IMenu>[] a = getConfiguredMenus();
@@ -306,6 +314,16 @@ public abstract class AbstractFileChooserField extends AbstractValueField<String
   }
 
   @Override
+  public void setMultiMode(boolean multiMode) {
+    propertySupport.setPropertyBool(PROP_MULTI_MODE, multiMode);
+  }
+
+  @Override
+  public boolean isMultiMode() {
+    return propertySupport.getPropertyBool(PROP_MULTI_MODE);
+  }
+
+  @Override
   public IMenu[] getMenus() {
     return m_menus;
   }
@@ -323,7 +341,7 @@ public abstract class AbstractFileChooserField extends AbstractValueField<String
     fc.setDirectory(getDirectory());
     fc.setFileName(getFileName());
     fc.setFileExtensions(getFileExtensions());
-    fc.setMultiSelect(false);
+    fc.setMultiSelect(isMultiMode());
     return fc;
   }
 
@@ -372,6 +390,30 @@ public abstract class AbstractFileChooserField extends AbstractValueField<String
   // format value for display
   @Override
   protected String formatValueInternal(String validValue) {
+    if (!StringUtility.isNullOrEmpty(validValue)) {
+      String[] files = validValue.split("\\\"\\s*\\\"");
+      if (files.length > 1) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < files.length; i++) {
+          String fileAbsolutePath = files[i].replaceAll("(^\\\"|\\\"$)", "");
+          result.append("\"").append(formatSingleFileInternal(fileAbsolutePath)).append("\"");
+          if (i + 1 < files.length) {
+            result.append(" ");
+          }
+        }
+        return result.toString();
+      }
+      else {
+        return formatSingleFileInternal(validValue);
+      }
+    }
+    else {
+      return formatSingleFileInternal(validValue);
+    }
+
+  }
+
+  protected String formatSingleFileInternal(String validValue) {
     String s = validValue;
     if (s != null && s.length() > 0) {
       File f = new File(s);
@@ -417,6 +459,30 @@ public abstract class AbstractFileChooserField extends AbstractValueField<String
 
   @Override
   protected String parseValueInternal(String text) throws ProcessingException {
+    if (!StringUtility.isNullOrEmpty(text)) {
+      String[] files = text.split("\\\"\\s*\\\"");
+      if (files.length > 1) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < files.length; i++) {
+          String fileAbsolutePath = files[i].replaceAll("(^\\\"|\\\"$)", "");
+          result.append("\"").append(parseSingleFile(fileAbsolutePath)).append("\"");
+          if (i + 1 < files.length) {
+            result.append(" ");
+          }
+        }
+        return result.toString();
+      }
+      else {
+        return parseSingleFile(text);
+      }
+    }
+    else {
+      return parseSingleFile(text);
+    }
+
+  }
+
+  protected String parseSingleFile(String text) throws ProcessingException {
     String retVal = null;
     if (text != null && text.trim().length() == 0) {
       text = null;

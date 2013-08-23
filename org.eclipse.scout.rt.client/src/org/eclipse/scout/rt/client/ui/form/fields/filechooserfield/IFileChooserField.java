@@ -22,6 +22,8 @@ public interface IFileChooserField extends IValueField<String> {
 
   String PROP_MAX_LENGTH = "maxLength";
 
+  String PROP_MULTI_MODE = "multiMode";
+
   void setFolderMode(boolean b);
 
   boolean isFolderMode();
@@ -68,6 +70,10 @@ public interface IFileChooserField extends IValueField<String> {
   void setMaxLength(int len);
 
   int getMaxLength();
+
+  void setMultiMode(boolean multiMode);
+
+  boolean isMultiMode();
 
   IMenu[] getMenus();
 
