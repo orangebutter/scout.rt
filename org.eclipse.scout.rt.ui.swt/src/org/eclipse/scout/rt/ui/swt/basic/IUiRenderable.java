@@ -10,34 +10,19 @@
  ******************************************************************************/
 package org.eclipse.scout.rt.ui.swt.basic;
 
-import org.eclipse.scout.commons.beans.IPropertyObserver;
 import org.eclipse.scout.rt.ui.swt.ISwtEnvironment;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 /**
- * <h3>ISwtScoutComposite</h3> ...
- * 
- * @author Andreas Hoegger
+ *
  */
-public interface ISwtScoutComposite<T extends IPropertyObserver> extends IUiRenderable<T> {
-  String PROP_SWT_SCOUT_COMPOSITE = "ISwtScoutComposite";
+public interface IUiRenderable<T> {
 
-  void createField(Composite parent, T model, ISwtEnvironment environment);
+  void create(Composite parent, T model, ISwtEnvironment environment);
 
-  T getScoutObject();
+  Control getControl();
 
-  ISwtEnvironment getEnvironment();
-
-  Control getSwtField();
-
-  Composite getSwtContainer();
-
-  boolean isDisposed();
-
-  /**
-   * is not thought to override. This method is to call to dispose a composite.
-   */
   void dispose();
 
 }

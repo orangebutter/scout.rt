@@ -15,6 +15,7 @@ import java.beans.PropertyChangeListener;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.scout.commons.beans.IPropertyObserver;
 import org.eclipse.scout.commons.exception.IProcessingStatus;
 import org.eclipse.scout.rt.client.ui.form.fields.ICompositeField;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
@@ -23,6 +24,7 @@ import org.eclipse.scout.rt.client.ui.form.fields.booleanfield.IBooleanField;
 import org.eclipse.scout.rt.client.ui.form.fields.sequencebox.ISequenceBox;
 import org.eclipse.scout.rt.ui.swt.LogicalGridData;
 import org.eclipse.scout.rt.ui.swt.LogicalGridLayout;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.ext.ILabelComposite;
 import org.eclipse.scout.rt.ui.swt.ext.StatusLabelEx;
 import org.eclipse.scout.rt.ui.swt.form.fields.ISwtScoutFormField;
@@ -50,41 +52,44 @@ public class SwtScoutSequenceBox extends SwtScoutFieldComposite<ISequenceBox> im
     Composite fieldContainer = getEnvironment().getFormToolkit().createComposite(container);
     int visibleCount = 0;
     for (IFormField scoutField : getScoutObject().getFields()) {
-      ISwtScoutFormField swtFormField = getEnvironment().createFormField(fieldContainer, scoutField);
+      IUiRenderable<?> swtFormField = getEnvironment().createFormField(fieldContainer, scoutField);
 
       ILabelComposite childLabel = null;
       if (swtFormField instanceof ISwtScoutCheckbox) {
         childLabel = ((ISwtScoutCheckbox) swtFormField).getPlaceholderLabel();
       }
-      else {
-        childLabel = swtFormField.getSwtLabel();
+      else if (swtFormField instanceof ISwtScoutFormField) {
+        childLabel = ((ISwtScoutFormField) swtFormField).getSwtLabel();
       }
       if (childLabel != null && childLabel.getLayoutData() instanceof LogicalGridData) {
         //Make the label as small as possible
         ((LogicalGridData) childLabel.getLayoutData()).widthHint = 0;
 
-        //Remove the label completely if the formField doesn't actually have a label on the left side
-        if (removeLabelCompletely(swtFormField)) {
-          childLabel.setVisible(false);
-        }
-
-        // <bsh 2010-10-01>
-        // Force an empty, but visible label for all but the first visible fields
-        // within an SequenceBox. This empty status label is necessary to show the
-        // "mandatory" indicator.
-        if (swtFormField.getScoutObject() instanceof IFormField) {
-          IFormField childScoutField = ((IFormField) swtFormField.getScoutObject());
-          if (childScoutField.isVisible()) {
-            visibleCount++;
+        //Remove the label completely if the formField doesn't actually has a label on the left side
+        if (swtFormField instanceof ISwtScoutFormField) {
+          if (removeLabelCompletely((ISwtScoutFormField) swtFormField)) {
+            childLabel.setVisible(false);
           }
-          if (visibleCount > 1) {
-            if (!childLabel.getVisible()) {
-              // make the label visible, but clear any text
-              childLabel.setVisible(true);
-              childLabel.setText("");
+          // <bsh 2010-10-01>
+          // Force an empty, but visible label for all but the first visible fields
+          // within an SequenceBox. This empty status label is necessary to show the
+          // "mandatory" indicator.
+          IPropertyObserver childModel = ((ISwtScoutFormField) swtFormField).getScoutObject();
+          if (childModel instanceof IFormField) {
+            IFormField childScoutField = ((IFormField) childModel);
+            if (childScoutField.isVisible()) {
+              visibleCount++;
+            }
+            if (visibleCount > 1) {
+              if (!childLabel.getVisible()) {
+                // make the label visible, but clear any text
+                childLabel.setVisible(true);
+                childLabel.setText("");
+              }
             }
           }
         }
+
         // <bsh>
       }
       // create layout constraints
@@ -96,7 +101,7 @@ public class SwtScoutSequenceBox extends SwtScoutFieldComposite<ISequenceBox> im
           useUiHeight = true;
         }
       };
-      swtFormField.getSwtContainer().setLayoutData(data);
+      swtFormField.getControl().setLayoutData(data);
 
     }
     //

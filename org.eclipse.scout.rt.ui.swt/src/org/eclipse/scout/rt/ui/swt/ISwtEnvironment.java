@@ -23,6 +23,7 @@ import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.messagebox.IMessageBox;
 import org.eclipse.scout.rt.shared.data.basic.FontSpec;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.busy.SwtBusyHandler;
 import org.eclipse.scout.rt.ui.swt.form.ISwtScoutForm;
 import org.eclipse.scout.rt.ui.swt.form.fields.ISwtScoutFormField;
@@ -232,6 +233,20 @@ public interface ISwtEnvironment {
   // Gui factory
   ISwtScoutForm createForm(Composite parent, IForm scoutForm);
 
+  /**
+   * @param parent
+   * @param model
+   * @return the renderer registered for the model class.
+   */
+  IUiRenderable<?> createUiRenderer(Composite parent, Object model);
+
+  /**
+   * @param parent
+   * @param model
+   * @return
+   * @deprecated use {@link ISwtEnvironment#createUiRenderer(Composite, Object)} instead.
+   */
+  @Deprecated
   ISwtScoutFormField createFormField(Composite parent, IFormField model);
 
   ISwtScoutTray getTrayComposite();

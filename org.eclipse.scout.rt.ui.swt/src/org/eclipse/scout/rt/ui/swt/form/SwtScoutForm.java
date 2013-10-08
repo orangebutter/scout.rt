@@ -25,6 +25,7 @@ import org.eclipse.scout.rt.ui.swt.DefaultValidateRoot;
 import org.eclipse.scout.rt.ui.swt.IValidateRoot;
 import org.eclipse.scout.rt.ui.swt.LogicalGridLayout;
 import org.eclipse.scout.rt.ui.swt.basic.ISwtScoutComposite;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.basic.SwtScoutComposite;
 import org.eclipse.scout.rt.ui.swt.basic.WidgetPrinter;
 import org.eclipse.scout.rt.ui.swt.form.fields.ISwtScoutFormField;
@@ -44,10 +45,9 @@ public class SwtScoutForm extends SwtScoutComposite<IForm> implements ISwtScoutF
   @Override
   protected void initializeSwt(Composite parent) {
     Composite container = getEnvironment().getFormToolkit().createComposite(parent);
-    ISwtScoutFormField swtGroup = getEnvironment().createFormField(container, getScoutObject().getRootGroupBox());
-    Composite swtField = swtGroup.getSwtContainer();
+    IUiRenderable<?> swtGroup = getEnvironment().createFormField(container, getScoutObject().getRootGroupBox());
     setSwtContainer(container);
-    setSwtField(swtField);
+    setSwtField(swtGroup.getControl());
 
     // use grid layout with decent min-width
     SwtScoutFormFieldGridData layoutData = new SwtScoutFormFieldGridData(getScoutObject().getRootGroupBox());

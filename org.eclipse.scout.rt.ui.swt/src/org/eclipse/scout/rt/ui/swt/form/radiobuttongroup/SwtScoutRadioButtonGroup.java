@@ -16,6 +16,7 @@ import org.eclipse.scout.rt.client.ui.form.fields.GridData;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.radiobuttongroup.IRadioButtonGroup;
 import org.eclipse.scout.rt.ui.swt.LogicalGridLayout;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.ext.StatusLabelEx;
 import org.eclipse.scout.rt.ui.swt.extension.IUiDecoration;
 import org.eclipse.scout.rt.ui.swt.extension.UiDecorationExtensionPoint;
@@ -48,14 +49,17 @@ public class SwtScoutRadioButtonGroup extends SwtScoutValueFieldComposite<IRadio
     Composite buttonArea = new P_RadioButtonComposite(container);// getEnvironment().getFormToolkit().createComposite(container);
     getEnvironment().getFormToolkit().adapt(buttonArea);
     for (IFormField scoutField : getScoutObject().getFields()) {
-      ISwtScoutFormField swtField = getEnvironment().createFormField(buttonArea, scoutField);
-      if (swtField.getSwtField() instanceof Button) {
-        Button swtButton = (Button) swtField.getSwtField();
-        swtButton.addListener(SWT.Selection, m_swtButtonListener);
-        swtButton.addListener(SWT.KeyDown, m_swtButtonListener);
-        m_swtRadioButtons.add(swtButton);
-        if (swtButton.getSelection()) {
-          buttonArea.setTabList(new Control[]{swtButton.getParent()});
+      IUiRenderable<?> uiRenderable = getEnvironment().createFormField(buttonArea, scoutField);
+      if (uiRenderable instanceof ISwtScoutFormField) {
+        ISwtScoutFormField swtField = (ISwtScoutFormField) uiRenderable;
+        if (swtField.getSwtField() instanceof Button) {
+          Button swtButton = (Button) swtField.getSwtField();
+          swtButton.addListener(SWT.Selection, m_swtButtonListener);
+          swtButton.addListener(SWT.KeyDown, m_swtButtonListener);
+          m_swtRadioButtons.add(swtButton);
+          if (swtButton.getSelection()) {
+            buttonArea.setTabList(new Control[]{swtButton.getParent()});
+          }
         }
       }
     }

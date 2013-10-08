@@ -4,6 +4,7 @@
    <extension-point id="org.eclipse.scout.rt.ui.swt.formfields" name="Form Fields" schema="schema/formfields.exsd"/>
    <extension-point id="org.eclipse.scout.rt.ui.swt.lookAndFeel" name="lookAndFeel" schema="schema/lookAndFeel.exsd"/>
    <extension-point id="org.eclipse.scout.rt.ui.swt.scouticons" name="Scout Icons" schema="schema/scouticons.exsd"/>
+   <extension-point id="org.eclipse.scout.rt.ui.swt.swtUiRenderer" name="UI Renderer" schema="schema/swtUiRenderer.exsd"/>
    <extension
          point="org.eclipse.ui.themes">
       <theme
@@ -343,5 +344,18 @@
       <scheme id="org.eclipse.scout.rt.ui.swt.keybindings.scheme"
               name="Scout SWT Keybindings Scheme">
       </scheme>
+   </extension>
+   <extension
+         point="org.eclipse.scout.rt.ui.swt.swtUiRenderer">
+      <renderer
+            active="true"
+            modelClass="org.eclipse.scout.rt.client.ui.basic.table.ITable"
+            name="Table"
+            priority="-1"
+            scope="default">
+         <directRenderer
+               class="org.eclipse.scout.rt.ui.swt.basic.table.SwtScoutTable">
+         </directRenderer>
+      </renderer>
    </extension>
 </plugin>

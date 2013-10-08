@@ -15,8 +15,7 @@ import org.eclipse.scout.rt.client.ui.basic.table.ITable;
 import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
 import org.eclipse.scout.rt.ui.swt.LogicalGridData;
 import org.eclipse.scout.rt.ui.swt.LogicalGridLayout;
-import org.eclipse.scout.rt.ui.swt.basic.table.ISwtScoutTable;
-import org.eclipse.scout.rt.ui.swt.basic.table.SwtScoutTable;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.ext.StatusLabelEx;
 import org.eclipse.scout.rt.ui.swt.form.fields.LogicalGridDataBuilder;
 import org.eclipse.scout.rt.ui.swt.form.fields.SwtScoutFieldComposite;
@@ -26,8 +25,9 @@ import org.eclipse.swt.widgets.Control;
 
 public class SwtScoutTableField extends SwtScoutFieldComposite<ITableField<? extends ITable>> implements ISwtScoutTableField {
 
-  private ISwtScoutTable m_tableComposite;
+//  private ISwtScoutTable m_tableComposite;
   private ISwtTableStatus m_swtTableStatus;
+  private IUiRenderable<?> m_tableRenderer;
 
   @Override
   protected void initializeSwt(Composite parent) {
@@ -47,14 +47,7 @@ public class SwtScoutTableField extends SwtScoutFieldComposite<ITableField<? ext
    */
   @Override
   protected void setFieldEnabled(Control swtField, boolean b) {
-    if (m_tableComposite != null) {
-      m_tableComposite.setEnabledFromScout(b);
-    }
-  }
-
-  @Override
-  public Control getSwtField() {
-    return super.getSwtField();
+    // void
   }
 
   @Override
@@ -66,25 +59,24 @@ public class SwtScoutTableField extends SwtScoutFieldComposite<ITableField<? ext
   protected synchronized void setTableFromScout(ITable table) {
     try {
       getSwtContainer().setRedraw(false);
-      if (m_tableComposite != null && !m_tableComposite.isDisposed()) {
-        m_tableComposite.dispose();
+      if (m_tableRenderer != null) {
+        m_tableRenderer.dispose();
       }
       if (m_swtTableStatus != null) {
         m_swtTableStatus.dispose();
       }
-      m_tableComposite = null;
+      m_tableRenderer = null;
       m_swtTableStatus = null;
       if (table != null) {
         //table
         LogicalGridData tableGridData = LogicalGridDataBuilder.createField(getScoutObject().getGridData());
-        m_tableComposite = createSwtScoutTable();
-        m_tableComposite.createField(getSwtContainer(), getScoutObject().getTable(), getEnvironment());
-        m_tableComposite.getSwtField().setLayoutData(tableGridData);
+        m_tableRenderer = getEnvironment().createUiRenderer(getSwtContainer(), getScoutObject().getTable());
+//        m_tableComposite.getSwtField().setLayoutData(tableGridData);
         //table status
         if (getScoutObject().isTableStatusVisible()) {
           m_swtTableStatus = createSwtTableStatus();
         }
-        setSwtField(m_tableComposite.getSwtField());
+        setSwtField(m_tableRenderer.getControl());
         setTableStatusFromScout();
       }
     }
@@ -103,10 +95,6 @@ public class SwtScoutTableField extends SwtScoutFieldComposite<ITableField<? ext
       IProcessingStatus selectionStatus = getScoutObject().getTableSelectionStatus();
       m_swtTableStatus.setStatus(dataStatus, selectionStatus);
     }
-  }
-
-  protected ISwtScoutTable createSwtScoutTable() {
-    return new SwtScoutTable();
   }
 
   protected ISwtTableStatus createSwtTableStatus() {

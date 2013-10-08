@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
- * 
+ *
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
@@ -13,6 +13,7 @@ package org.eclipse.scout.rt.ui.swt.form.fields.snapbox;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.button.IButton;
 import org.eclipse.scout.rt.client.ui.form.fields.snapbox.ISnapBox;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.form.fields.ISwtScoutFormField;
 import org.eclipse.scout.rt.ui.swt.form.fields.SwtScoutFieldComposite;
 import org.eclipse.scout.rt.ui.swt.form.fields.snapbox.button.SwtScoutMinimizedButton;
@@ -36,12 +37,14 @@ public class SwtScoutSnapBox extends SwtScoutFieldComposite<ISnapBox> implements
     // create fields
     for (IFormField field : getScoutObject().getFields()) {
       SnapBoxLayoutData data = new SnapBoxLayoutData();
-      ISwtScoutFormField swtField = getEnvironment().createFormField(m_maximizedItemArea, field);
-      swtField.getSwtField().setLayoutData(data);
-      if (field instanceof IButton) {
-        SwtScoutMinimizedButton minButton = new SwtScoutMinimizedButton();
-        minButton.createField(m_minimizedItemArea, (IButton) field, getEnvironment());
-        minButton.getSwtField().setLayoutData(data);
+      IUiRenderable<?> swtField = getEnvironment().createFormField(m_maximizedItemArea, field);
+      if (swtField instanceof ISwtScoutFormField) {
+        ((ISwtScoutFormField) swtField).getSwtField().setLayoutData(data);
+        if (field instanceof IButton) {
+          SwtScoutMinimizedButton minButton = new SwtScoutMinimizedButton();
+          minButton.createField(m_minimizedItemArea, (IButton) field, getEnvironment());
+          minButton.getSwtField().setLayoutData(data);
+        }
       }
     }
     // layout

@@ -169,6 +169,19 @@ public abstract class AbstractSwtScoutStringField extends SwtScoutValueFieldComp
         @Override
         public void run() {
           getScoutObject().getUIFacade().setTextFromUI(text);
+          // check for validation changes
+          String newValue = getScoutObject().getValue();
+          if (!CompareUtility.equals(text, newValue)) {
+            // schedule update ui
+            Runnable uiUpdate = new Runnable() {
+
+              @Override
+              public void run() {
+
+              }
+            };
+            getEnvironment().invokeSwtLater(uiUpdate);
+          }
         }
       };
       getEnvironment().invokeScoutLater(t, 0);
@@ -379,6 +392,27 @@ public abstract class AbstractSwtScoutStringField extends SwtScoutValueFieldComp
     }
   }
 
+  protected void setDisplayTextFromScout(String s, boolean fireToModel) {
+    if (!fireToModel) {
+      try {
+
+      }
+      finally {
+
+      }
+    }
+    else {
+      setDisplayTextFromScout(s);
+    }
+  }
+
+//  @Override
+//  protected boolean isHandleScoutPropertyChange(String name, Object newValue) {
+//    if(IStringField.PROP_DISPLAY_TEXT.equals(name)){
+//      return 
+//    }
+//    return super.isHandleScoutPropertyChange(name, newValue);
+//  }
   /**
    * scout property handler override
    */

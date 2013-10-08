@@ -60,6 +60,7 @@ import org.eclipse.scout.rt.shared.data.basic.FontSpec;
 import org.eclipse.scout.rt.shared.ui.UiDeviceType;
 import org.eclipse.scout.rt.shared.ui.UiLayer;
 import org.eclipse.scout.rt.shared.ui.UserAgent;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.basic.WidgetPrinter;
 import org.eclipse.scout.rt.ui.swt.busy.SwtBusyHandler;
 import org.eclipse.scout.rt.ui.swt.concurrency.SwtScoutSynchronizer;
@@ -163,6 +164,8 @@ public abstract class AbstractSwtEnvironment extends AbstractPropertyObserver im
   private Rectangle m_popupOwnerBounds;
 
   private ScoutFormToolkit m_formToolkit;
+  private BundleUiRenderer m_uiRenderer;
+
   private FormFieldFactory m_formFieldFactory;
 
   private PropertyChangeSupport m_propertySupport;
@@ -1448,12 +1451,25 @@ public abstract class AbstractSwtEnvironment extends AbstractPropertyObserver im
   }
 
   @Override
+  @SuppressWarnings("deprecation")
   public ISwtScoutFormField createFormField(Composite parent, IFormField model) {
-    if (m_formFieldFactory == null) {
-      m_formFieldFactory = new FormFieldFactory(m_applicationBundle);
+    return (ISwtScoutFormField) createUiRenderer(parent, model);
+  }
+
+  @Override
+  public IUiRenderable<?> createUiRenderer(Composite parent, Object model) {
+    if (m_uiRenderer == null) {
+      m_uiRenderer = new BundleUiRenderer(m_applicationBundle);
     }
-    ISwtScoutFormField<IFormField> uiField = m_formFieldFactory.createFormField(parent, model, this);
-    return uiField;
+    IUiRenderable<?> renderer = m_uiRenderer.create(parent, model, this);
+    if (renderer == null && model instanceof IFormField) {
+      // legacy
+      if (m_formFieldFactory == null) {
+        m_formFieldFactory = new FormFieldFactory(m_applicationBundle);
+      }
+      renderer = m_formFieldFactory.createFormField(parent, (IFormField) model, this);
+    }
+    return renderer;
   }
 
   @Override

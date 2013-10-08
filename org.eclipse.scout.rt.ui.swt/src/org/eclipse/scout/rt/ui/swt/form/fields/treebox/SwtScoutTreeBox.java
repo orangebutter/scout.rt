@@ -14,7 +14,7 @@ import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.treebox.ITreeBox;
 import org.eclipse.scout.rt.ui.swt.LogicalGridData;
 import org.eclipse.scout.rt.ui.swt.LogicalGridLayout;
-import org.eclipse.scout.rt.ui.swt.basic.ISwtScoutComposite;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.basic.tree.ISwtScoutTree;
 import org.eclipse.scout.rt.ui.swt.basic.tree.SwtScoutTree;
 import org.eclipse.scout.rt.ui.swt.ext.StatusLabelEx;
@@ -48,13 +48,13 @@ public class SwtScoutTreeBox extends SwtScoutValueFieldComposite<ITreeBox<?>> im
     // filter box
     IFormField[] childFields = getScoutObject().getFields();
     if (childFields.length > 0) {
-      ISwtScoutComposite filterComposite = getEnvironment().createFormField(container, childFields[0]);
+      IUiRenderable<?> filterComposite = getEnvironment().createFormField(container, childFields[0]);
       LogicalGridData filterData = LogicalGridDataBuilder.createField(childFields[0].getGridData());
       filterData.gridx = fieldData.gridx;
       filterData.gridy = fieldData.gridy + fieldData.gridh;
       filterData.gridw = fieldData.gridw;
       filterData.weightx = fieldData.weightx;
-      filterComposite.getSwtContainer().setLayoutData(filterData);
+      filterComposite.getControl().setLayoutData(filterData);
     }
     //
     setSwtContainer(container);

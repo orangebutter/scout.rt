@@ -33,6 +33,7 @@ import org.eclipse.scout.rt.client.ui.form.fields.GridData;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.stringfield.IStringField;
 import org.eclipse.scout.rt.ui.swt.basic.ISwtScoutComposite;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.basic.table.ISwtScoutTable;
 import org.eclipse.scout.rt.ui.swt.basic.table.SwtScoutTable;
 import org.eclipse.scout.rt.ui.swt.extension.UiDecorationExtensionPoint;
@@ -123,16 +124,15 @@ public class SwtScoutTableCellEditor {
   protected Control getEditorControl(Composite parent, ITableRow scoutRow, IColumn<?> scoutCol) {
     //no caching
     Control swtEditorControl = null;
-    ISwtScoutComposite<? extends IFormField> editorComposite = createEditorComposite(parent, scoutRow, scoutCol);
+    IUiRenderable<?> editorComposite = createEditorComposite(parent, scoutRow, scoutCol);
     if (editorComposite != null) {
       decorateEditorComposite(editorComposite, scoutRow, scoutCol);
-      swtEditorControl = editorComposite.getSwtContainer();
+      swtEditorControl = editorComposite.getControl();
     }
     return swtEditorControl;
   }
 
-  @SuppressWarnings("unchecked")
-  protected ISwtScoutComposite<? extends IFormField> createEditorComposite(Composite parent, final ITableRow scoutRow, final IColumn<?> scoutCol) {
+  protected IUiRenderable<?> createEditorComposite(Composite parent, final ITableRow scoutRow, final IColumn<?> scoutCol) {
     final AtomicReference<IFormField> fieldRef = new AtomicReference<IFormField>();
     if (scoutRow != null && scoutCol != null) {
       Runnable t = new Runnable() {
@@ -159,13 +159,13 @@ public class SwtScoutTableCellEditor {
       return null;
     }
 
-    ISwtScoutComposite swtScoutFormField;
+    IUiRenderable<?> swtScoutFormField;
     if (formField instanceof IStringField && ((IStringField) formField).isMultilineText()) {
       // for fields to be presented as popup dialog
       swtScoutFormField = createEditorCompositesPopup(parent, formField, scoutRow, scoutCol);
     }
     else {
-      swtScoutFormField = m_tableComposite.getEnvironment().createFormField(parent, formField);
+      swtScoutFormField = m_tableComposite.getEnvironment().createUiRenderer(parent, formField);
     }
 
     // If the SWT field uses a @{Shell} to edit its value, the focus on the table gets lost while the shell is open.
@@ -240,7 +240,7 @@ public class SwtScoutTableCellEditor {
       public void doSetFocus() {
         ISwtScoutForm swtScoutForm = formFieldDialog.getInnerSwtScoutForm();
         if (swtScoutForm != null) {
-            requestFocus(swtScoutForm.getSwtContainer());
+          requestFocus(swtScoutForm.getSwtContainer());
         }
       }
     });
@@ -329,7 +329,7 @@ public class SwtScoutTableCellEditor {
     return -1;
   }
 
-  protected void decorateEditorComposite(ISwtScoutComposite<? extends IFormField> editorComposite, final ITableRow scoutRow, final IColumn<?> scoutCol) {
+  protected void decorateEditorComposite(IUiRenderable<?> editorComposite, final ITableRow scoutRow, final IColumn<?> scoutCol) {
   }
 
   protected void saveEditorFromSwt() {
@@ -392,7 +392,7 @@ public class SwtScoutTableCellEditor {
     if (control.setFocus()) {
       return true;
     }
-  
+
     if (control instanceof Composite) {
       for (Control child : ((Composite) control).getChildren()) {
         if (requestFocus(child)) {
@@ -613,29 +613,29 @@ public class SwtScoutTableCellEditor {
               switch (e.detail) {
                 case SWT.TRAVERSE_ESCAPE:
                 case SWT.TRAVERSE_RETURN: {
-                e.doit = false;
-                break;
-              }
-              case SWT.TRAVERSE_TAB_NEXT: {
-                e.doit = false;
-                ITableRow scoutRow = m_editScoutRow;
-                IColumn<?> scoutCol = m_editScoutCol;
-                fireApplyEditorValue();
-                deactivate();
-                enqueueEditNextTableCell(scoutRow, scoutCol, true);
-                break;
-              }
-              case SWT.TRAVERSE_TAB_PREVIOUS: {
-                e.doit = false;
-                ITableRow scoutRow = m_editScoutRow;
-                IColumn<?> scoutCol = m_editScoutCol;
-                fireApplyEditorValue();
-                deactivate();
-                enqueueEditNextTableCell(scoutRow, scoutCol, false);
-                break;
+                  e.doit = false;
+                  break;
+                }
+                case SWT.TRAVERSE_TAB_NEXT: {
+                  e.doit = false;
+                  ITableRow scoutRow = m_editScoutRow;
+                  IColumn<?> scoutCol = m_editScoutCol;
+                  fireApplyEditorValue();
+                  deactivate();
+                  enqueueEditNextTableCell(scoutRow, scoutCol, true);
+                  break;
+                }
+                case SWT.TRAVERSE_TAB_PREVIOUS: {
+                  e.doit = false;
+                  ITableRow scoutRow = m_editScoutRow;
+                  IColumn<?> scoutCol = m_editScoutCol;
+                  fireApplyEditorValue();
+                  deactivate();
+                  enqueueEditNextTableCell(scoutRow, scoutCol, false);
+                  break;
+                }
               }
             }
-          }
           });
         }
         getFocusLostListener().resume(); // because listener was suspended after activation

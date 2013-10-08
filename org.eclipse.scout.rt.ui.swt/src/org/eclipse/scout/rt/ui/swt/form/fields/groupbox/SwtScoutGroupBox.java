@@ -18,11 +18,11 @@ import org.eclipse.scout.rt.client.ui.form.fields.tabbox.ITabBox;
 import org.eclipse.scout.rt.ui.swt.DefaultValidateRoot;
 import org.eclipse.scout.rt.ui.swt.IValidateRoot;
 import org.eclipse.scout.rt.ui.swt.LogicalGridLayout;
+import org.eclipse.scout.rt.ui.swt.basic.IUiRenderable;
 import org.eclipse.scout.rt.ui.swt.ext.ScrolledFormEx;
 import org.eclipse.scout.rt.ui.swt.ext.StatusLabelEx;
 import org.eclipse.scout.rt.ui.swt.extension.IUiDecoration;
 import org.eclipse.scout.rt.ui.swt.extension.UiDecorationExtensionPoint;
-import org.eclipse.scout.rt.ui.swt.form.fields.ISwtScoutFormField;
 import org.eclipse.scout.rt.ui.swt.form.fields.SwtScoutFieldComposite;
 import org.eclipse.scout.rt.ui.swt.form.fields.SwtScoutFormFieldGridData;
 import org.eclipse.scout.rt.ui.swt.window.ISwtScoutPart;
@@ -98,9 +98,9 @@ public class SwtScoutGroupBox extends SwtScoutFieldComposite<IGroupBox> implemen
     // FIELDS:
     IFormField[] scoutFields = getScoutObject().getControlFields();
     for (IFormField field : scoutFields) {
-      ISwtScoutFormField swtScoutComposite = getEnvironment().createFormField(m_swtBodyPart, field);
+      IUiRenderable<?> swtScoutComposite = getEnvironment().createFormField(m_swtBodyPart, field);
       SwtScoutFormFieldGridData layoutData = new SwtScoutFormFieldGridData(field);
-      swtScoutComposite.getSwtContainer().setLayoutData(layoutData);
+      swtScoutComposite.getControl().setLayoutData(layoutData);
     }
   }
 

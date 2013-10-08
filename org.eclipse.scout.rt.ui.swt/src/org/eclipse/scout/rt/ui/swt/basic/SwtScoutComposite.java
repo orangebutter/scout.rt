@@ -130,11 +130,21 @@ public abstract class SwtScoutComposite<T extends IPropertyObserver> implements 
   }
 
   @Override
-  public void createField(Composite parent, T scoutObject, ISwtEnvironment environment) {
-    m_scoutObject = scoutObject;
+  public void create(Composite parent, T model, ISwtEnvironment environment) {
+    m_scoutObject = model;
     m_environment = environment;
     callInitializers(parent);
   }
+
+  @Override
+  public void createField(Composite parent, T model, ISwtEnvironment environment) {
+    create(parent, model, environment);
+  }
+
+//  @Deprecated
+//  @Override
+//  public void createField(Composite parent, T scoutObject, ISwtEnvironment environment) {
+//  }
 
   protected final void callInitializers(Composite parent) {
     if (m_initialized) {
@@ -166,6 +176,17 @@ public abstract class SwtScoutComposite<T extends IPropertyObserver> implements 
 
   public boolean isInitialized() {
     return m_initialized;
+  }
+
+  @Override
+  public Control getControl() {
+    if (getSwtContainer() != null) {
+      return getSwtContainer();
+    }
+    else {
+      return getSwtField();
+    }
+
   }
 
   @Override
