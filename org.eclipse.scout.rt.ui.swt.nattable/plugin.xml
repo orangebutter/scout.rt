@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.scout.rt.ui.swt.swtUiRenderer">
+      <renderer
+            active="true"
+            modelClass="org.eclipse.scout.rt.client.ui.basic.table.ITable"
+            name="Nat Table"
+            priority="10"
+            scope="default">
+         <directRenderer
+               class="org.eclipse.scout.rt.ui.swt.basic.table.SwtScoutNatTable">
+         </directRenderer>
+      </renderer>
+   </extension>
+
+</plugin>
