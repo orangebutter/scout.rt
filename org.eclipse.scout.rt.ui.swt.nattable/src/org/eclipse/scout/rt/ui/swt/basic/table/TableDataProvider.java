@@ -30,7 +30,7 @@ public class TableDataProvider implements IRowDataProvider<ITableRow> {
 
   @Override
   public Object getDataValue(int columnIndex, int rowIndex) {
-    return getScoutTable().getCell(rowIndex, columnIndex);
+    return getScoutTable().getVisibleCell(rowIndex, columnIndex).getText();
   }
 
   @Override
