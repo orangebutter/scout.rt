@@ -8,32 +8,43 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.ui.swt.basic.table;
+package org.eclipse.scout.rt.ui.swt.basic.table.dataprovider;
 
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
-import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.scout.rt.client.ui.basic.table.ITable;
 
 /**
  *
  */
-public class ColumnHeaderDataLayer extends DataLayer {
-
+public class ColumnHeaderDataProvider implements IDataProvider {
   private ITable m_scoutTable;
 
-  /**
-   * @param dataProvider
-   */
-  public ColumnHeaderDataLayer(IDataProvider dataProvider, ITable scoutTable) {
-    super(dataProvider);
+  public ColumnHeaderDataProvider(ITable scoutTable) {
     m_scoutTable = scoutTable;
-//    setDefaultColumnWidth(10);
+
   }
 
   @Override
-  public int getColumnWidthByPosition(int columnPosition) {
-    return m_scoutTable.getColumnSet().getVisibleColumn(columnPosition).getWidth();
-//    return super.getColumnWidthByPosition(columnPosition);
+  public int getColumnCount() {
+    int visibleColumnCount = m_scoutTable.getColumnSet().getVisibleColumnCount();
+    return visibleColumnCount;
   }
 
+  @Override
+  public Object getDataValue(int columnIndex, int rowIndex) {
+    if (columnIndex >= 0) {
+      return m_scoutTable.getVisibleHeaderCell(columnIndex).getText();
+    }
+    return "blubber";
+  }
+
+  @Override
+  public int getRowCount() {
+    return 1;
+  }
+
+  @Override
+  public void setDataValue(int columnIndex, int rowIndex, Object newValue) {
+    throw new UnsupportedOperationException();
+  }
 }

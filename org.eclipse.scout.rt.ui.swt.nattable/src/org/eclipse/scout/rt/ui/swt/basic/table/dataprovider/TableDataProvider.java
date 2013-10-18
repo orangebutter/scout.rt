@@ -8,7 +8,7 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.ui.swt.basic.table;
+package org.eclipse.scout.rt.ui.swt.basic.table.dataprovider;
 
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.scout.rt.client.ui.basic.table.ITable;
@@ -30,7 +30,7 @@ public class TableDataProvider implements IRowDataProvider<ITableRow> {
 
   @Override
   public Object getDataValue(int columnIndex, int rowIndex) {
-    return getScoutTable().getVisibleCell(rowIndex, columnIndex).getText();
+    return getScoutTable().getVisibleCell(rowIndex, columnIndex);
   }
 
   @Override
@@ -39,7 +39,7 @@ public class TableDataProvider implements IRowDataProvider<ITableRow> {
 
   @Override
   public int getColumnCount() {
-    return getScoutTable().getVisibleColumnCount();
+    return getScoutTable().getColumnSet().getVisibleColumnCount();
   }
 
   @Override

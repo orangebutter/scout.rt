@@ -4,17 +4,18 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.eclipse.nebula.widgets.nattable.NatTable;
+import org.eclipse.nebula.widgets.nattable.command.ILayerCommand;
 import org.eclipse.nebula.widgets.nattable.config.AggregateConfiguration;
 import org.eclipse.nebula.widgets.nattable.data.IDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowDataProvider;
 import org.eclipse.nebula.widgets.nattable.data.IRowIdAccessor;
 import org.eclipse.nebula.widgets.nattable.grid.GridRegion;
 import org.eclipse.nebula.widgets.nattable.grid.layer.ColumnHeaderLayer;
-import org.eclipse.nebula.widgets.nattable.grid.layer.DefaultColumnHeaderDataLayer;
-import org.eclipse.nebula.widgets.nattable.hideshow.ColumnHideShowLayer;
 import org.eclipse.nebula.widgets.nattable.layer.CompositeLayer;
 import org.eclipse.nebula.widgets.nattable.layer.DataLayer;
 import org.eclipse.nebula.widgets.nattable.layer.ILayer;
+import org.eclipse.nebula.widgets.nattable.layer.IUniqueIndexLayer;
+import org.eclipse.nebula.widgets.nattable.painter.layer.CellLayerPainter;
 import org.eclipse.nebula.widgets.nattable.reorder.ColumnReorderLayer;
 import org.eclipse.nebula.widgets.nattable.search.config.DefaultSearchBindings;
 import org.eclipse.nebula.widgets.nattable.selection.RowSelectionModel;
@@ -30,27 +31,83 @@ import org.eclipse.scout.rt.client.ui.basic.table.TableEvent;
 import org.eclipse.scout.rt.client.ui.basic.table.TableListener;
 import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.ui.swt.basic.SwtScoutComposite;
+import org.eclipse.scout.rt.ui.swt.basic.table.command.ComputeRowHeightCommandHander;
+import org.eclipse.scout.rt.ui.swt.basic.table.command.ViewportComputeRowHeightCommandHandler;
+import org.eclipse.scout.rt.ui.swt.basic.table.configuration.BodyLayerConfiguration;
+import org.eclipse.scout.rt.ui.swt.basic.table.configuration.EsColumnHeaderLayerConfiguration;
 import org.eclipse.scout.rt.ui.swt.basic.table.configuration.SelectionStyleConfiguration;
 import org.eclipse.scout.rt.ui.swt.basic.table.configuration.TableStyleConfiguration;
+import org.eclipse.scout.rt.ui.swt.basic.table.dataprovider.ColumnHeaderDataProvider;
+import org.eclipse.scout.rt.ui.swt.basic.table.dataprovider.TableDataProvider;
+import org.eclipse.scout.rt.ui.swt.basic.table.painter.EsNatLayerPainter;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 public class SwtScoutNatTable extends SwtScoutComposite<ITable> implements ISwtScoutNatTable {
 
   private ITable m_scoutObject;
   private P_ScoutTableListener m_scoutTableListener;
+  private SelectionLayer m_selectionLayer;
 
   @Override
   protected void initializeSwt(Composite parent) {
 
     IRowDataProvider<ITableRow> bodyDataProvider = new TableDataProvider(getScoutObject());
-    DataLayer bodyDataLayer = new DataLayer(bodyDataProvider);
-    // column reorder layer
-    ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyDataLayer);
+    ILayer bodyLayer = createBodyLayer(bodyDataProvider, getScoutObject());
 
+    //build the column header layer
+    IDataProvider columnHeaderDataProvider = new ColumnHeaderDataProvider(getScoutObject());
+//    DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
+    ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(new DataLayer(columnHeaderDataProvider), bodyLayer, m_selectionLayer, false, new CellLayerPainter());
+    columnHeaderLayer.addConfiguration(new EsColumnHeaderLayerConfiguration());
+
+    // build composite layer
+    CompositeLayer compositeLayer = new CompositeLayer(1, 2);
+    compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
+    compositeLayer.setChildLayer(GridRegion.BODY, bodyLayer, 0, 1);
+
+//    EsCompositeLayer compositeLayer = new EsCompositeLayer(1, 1);
+//    compositeLayer.setChildLayer(GridRegion.BODY, bodyLayer, 0, 0);
+
+    NatTable natTable = new NatTable(parent, NatTable.DEFAULT_STYLE_OPTIONS | SWT.BORDER, compositeLayer, false) {
+      @Override
+      public void redraw(int x, int y, int width, int height, boolean all) {
+        super.redraw(x, y, width, height, all);
+      }
+    };
+    natTable.setLayerPainter(new EsNatLayerPainter(natTable));
+    natTable.addConfiguration(new TableStyleConfiguration(natTable, getScoutObject(), getEnvironment()));
+//    natTable.addConfiguration(new SelectionStyleConfiguration());
+    natTable.configure();
+    setSwtField(natTable);
+    m_scoutObject = getScoutObject();
+  }
+
+  public IUniqueIndexLayer createBodyLayer(IRowDataProvider<ITableRow> dataProvider, ITable scoutTable) {
+    IUniqueIndexLayer bodyLayer = createDataLayer(dataProvider, scoutTable);
+    bodyLayer = createColumnReorderLayer(bodyLayer, scoutTable);
+    bodyLayer = createHideShowLayer(bodyLayer, scoutTable);
+    bodyLayer = createSelectionLayer(bodyLayer, dataProvider, scoutTable);
+    bodyLayer = createViewPortLayer(bodyLayer, scoutTable);
+    return bodyLayer;
+  }
+
+  /**
+   * @param dataProvider
+   * @return
+   */
+  private IUniqueIndexLayer createDataLayer(IDataProvider dataProvider, ITable scoutTable) {
+    DataLayer dataLayer = new DataLayer(dataProvider) {
+      @Override
+      public boolean doCommand(ILayerCommand command) {
+        return super.doCommand(command);
+      }
+    };
+    dataLayer.registerCommandHandler(new ComputeRowHeightCommandHander());
     // column width
 
-    IColumn[] scoutColumns = getScoutObject().getColumnSet().getVisibleColumns();
-    if (getScoutObject().isAutoResizeColumns()) {
+    IColumn[] scoutColumns = scoutTable.getColumnSet().getVisibleColumns();
+    if (scoutTable.isAutoResizeColumns()) {
       int sumOfAllColumns = 0;
       for (int i = 0; i < scoutColumns.length; i++) {
         sumOfAllColumns += scoutColumns[i].getWidth();
@@ -59,27 +116,57 @@ public class SwtScoutNatTable extends SwtScoutComposite<ITable> implements ISwtS
       // percentage calculation
       for (int i = 0; i < scoutColumns.length - 1; i++) {
         int colWidth = (int) (100.0 / (double) sumOfAllColumns * scoutColumns[i].getWidth());
-        bodyDataLayer.setColumnWidthByPosition(i, colWidth);
+        dataLayer.setColumnWidthByPosition(i, colWidth);
         percentageSpace -= colWidth;
       }
       // last
-      bodyDataLayer.setColumnWidthByPosition(scoutColumns.length - 1, percentageSpace);
-      bodyDataLayer.setColumnPercentageSizing(true);
+      dataLayer.setColumnWidthByPosition(scoutColumns.length - 1, percentageSpace);
+      dataLayer.setColumnPercentageSizing(true);
+
     }
     else {
       int i = 0;
       for (IColumn<?> c : scoutColumns) {
-        bodyDataLayer.setColumnWidthByPosition(i++, c.getWidth());
+        dataLayer.setColumnWidthByPosition(i++, c.getWidth());
       }
     }
 
     // configuration
-    BodyLayerConfiguration bodyConfiguration = new BodyLayerConfiguration(getScoutObject());
-    bodyDataLayer.addConfiguration(bodyConfiguration);
-    bodyDataLayer.setConfigLabelAccumulator(bodyConfiguration);
+    BodyLayerConfiguration bodyConfiguration = new BodyLayerConfiguration(getScoutObject(), getEnvironment());
+    dataLayer.addConfiguration(bodyConfiguration);
+    dataLayer.setConfigLabelAccumulator(bodyConfiguration);
 
-    ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(columnReorderLayer);
-    SelectionLayer selectionLayer = new SelectionLayer(columnHideShowLayer, false);
+    return dataLayer;
+  }
+
+  /**
+   * @param bodyLayer
+   * @param scoutTable
+   * @return
+   */
+  private IUniqueIndexLayer createColumnReorderLayer(IUniqueIndexLayer bodyLayer, ITable scoutTable) {
+    ColumnReorderLayer columnReorderLayer = new ColumnReorderLayer(bodyLayer);
+    return columnReorderLayer;
+  }
+
+  /**
+   * @param bodyLayer
+   * @param scoutTable
+   * @return
+   */
+  private IUniqueIndexLayer createHideShowLayer(IUniqueIndexLayer bodyLayer, ITable scoutTable) {
+//    ColumnHideShowLayer columnHideShowLayer = new ColumnHideShowLayer(bodyLayer);
+//    return columnHideShowLayer
+    return bodyLayer;
+  }
+
+  /**
+   * @param bodyLayer
+   * @param scoutTable
+   * @return
+   */
+  private IUniqueIndexLayer createSelectionLayer(IUniqueIndexLayer bodyLayer, IRowDataProvider<ITableRow> rowDataProvider, ITable scoutTable) {
+    SelectionLayer selectionLayer = new SelectionLayer(bodyLayer, false);
     AggregateConfiguration selectionLayerConfiguration = new AggregateConfiguration();
     selectionLayerConfiguration.addConfiguration(new DefaultSelectionBindings());
     selectionLayerConfiguration.addConfiguration(new DefaultSearchBindings());
@@ -88,7 +175,7 @@ public class SwtScoutNatTable extends SwtScoutComposite<ITable> implements ISwtS
 
     selectionLayer.addConfiguration(selectionLayerConfiguration);
 
-    RowSelectionModel selectionModel = new RowSelectionModel<ITableRow>(selectionLayer, bodyDataProvider, new IRowIdAccessor<ITableRow>() {
+    RowSelectionModel selectionModel = new RowSelectionModel<ITableRow>(selectionLayer, rowDataProvider, new IRowIdAccessor<ITableRow>() {
       @Override
       public Serializable getRowId(ITableRow rowObject) {
         return rowObject.hashCode();
@@ -96,25 +183,19 @@ public class SwtScoutNatTable extends SwtScoutComposite<ITable> implements ISwtS
     }, false);
     selectionLayer.setSelectionModel(selectionModel);
     selectionLayer.addConfiguration(new SelectionStyleConfiguration());
+    m_selectionLayer = selectionLayer;
+    return selectionLayer;
+  }
 
-    ViewportLayer bodyLayer = new ViewportLayer(selectionLayer);
-
-    //build the column header layer
-    IDataProvider columnHeaderDataProvider = new ColumnHeaderDataProvider(getScoutObject());
-    DataLayer columnHeaderDataLayer = new DefaultColumnHeaderDataLayer(columnHeaderDataProvider);
-    ILayer columnHeaderLayer = new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, selectionLayer, true);
-
-    // build composite layer
-    CompositeLayer compositeLayer = new CompositeLayer(1, 2);
-    compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, columnHeaderLayer, 0, 0);
-    compositeLayer.setChildLayer(GridRegion.BODY, bodyLayer, 0, 1);
-
-    NatTable natTable = new NatTable(parent, compositeLayer, false);
-    natTable.addConfiguration(new TableStyleConfiguration(getScoutObject(), getEnvironment()));
-//    natTable.addConfiguration(new SelectionStyleConfiguration());
-    natTable.configure();
-    setSwtField(natTable);
-    m_scoutObject = getScoutObject();
+  /**
+   * @param bodyLayer
+   * @param scoutTable
+   * @return
+   */
+  private IUniqueIndexLayer createViewPortLayer(IUniqueIndexLayer bodyLayer, ITable scoutTable) {
+    ViewportLayer viewPortLayer = new ViewportLayer(bodyLayer);
+    viewPortLayer.registerCommandHandler(new ViewportComputeRowHeightCommandHandler());
+    return viewPortLayer;
   }
 
   @Override
