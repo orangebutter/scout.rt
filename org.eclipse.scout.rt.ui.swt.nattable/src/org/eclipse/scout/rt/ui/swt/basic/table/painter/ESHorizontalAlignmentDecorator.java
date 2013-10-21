@@ -62,7 +62,6 @@ public class ESHorizontalAlignmentDecorator extends CellPainterWrapper implement
 
   @Override
   public Point computeSize(int wHint, int hHint, ILayerCell cell, IConfigRegistry configRegistry, GC gc) {
-
     ICell scoutCell = getScoutTable().getCell(cell.getRowIndex(), cell.getColumnIndex());
     Point cellSize = ((IDynamicCellSizePainter) getWrappedPainter()).computeSize(wHint, hHint, cell, configRegistry, gc);
 
@@ -93,13 +92,13 @@ public class ESHorizontalAlignmentDecorator extends CellPainterWrapper implement
       cellPadding.setPaddingRight(0);
     }
     Point size = new Point(Math.max(cellSize.x, wHint), Math.max(hHint, cellSize.y));
-    System.out.println("-----");
-    System.out.println("compute size of: " + cell.getDataValue());
-    System.out.println("computed size = " + cellSize.toString());
-    System.out.println("w/hHint: " + wHint + "/" + hHint);
-    System.out.println(cellPadding.toString());
-    System.out.println("returned size = " + size.toString());
-    System.out.println("______________");
+//    System.out.println("-----");
+//    System.out.println("compute size of: " + cell.getDataValue());
+//    System.out.println("computed size = " + cellSize.toString());
+//    System.out.println("w/hHint: " + wHint + "/" + hHint);
+//    System.out.println(cellPadding.toString());
+//    System.out.println("returned size = " + size.toString());
+//    System.out.println("______________");
     cellPadding.setWidthHint(wHint);
     return size;
   }
@@ -113,6 +112,7 @@ public class ESHorizontalAlignmentDecorator extends CellPainterWrapper implement
       paddingLeft = cellPadding.getPaddingLeft();
       paddingRight = cellPadding.getPaddingRight();
     }
+//    System.out.println("*** " + getClass().getName() + " paintCell: " + adjustedCellBounds.toString() + " padding r/l " + paddingLeft + "/" + paddingRight);
     Rectangle interiorBounds = new Rectangle(adjustedCellBounds.x + paddingLeft, adjustedCellBounds.y, adjustedCellBounds.width - (paddingRight + paddingLeft), adjustedCellBounds.height);
     super.paintCell(cell, gc, interiorBounds, configRegistry);
   }

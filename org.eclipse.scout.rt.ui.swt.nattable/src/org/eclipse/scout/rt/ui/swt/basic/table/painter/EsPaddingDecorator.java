@@ -71,4 +71,9 @@ public class EsPaddingDecorator extends PaddingDecorator implements IDynamicCell
     return size;
   }
 
+  @Override
+  public void paintCell(ILayerCell cell, GC gc, Rectangle adjustedCellBounds, IConfigRegistry configRegistry) {
+//    System.out.println("*** " + getClass().getName() + " paintCell: " + adjustedCellBounds.toString());
+    super.paintCell(cell, gc, adjustedCellBounds, configRegistry);
+  }
 }

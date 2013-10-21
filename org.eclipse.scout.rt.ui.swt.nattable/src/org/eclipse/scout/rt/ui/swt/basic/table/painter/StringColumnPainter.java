@@ -47,7 +47,7 @@ public class StringColumnPainter extends AbstractStringColumnPainter {
   }
 
   public StringColumnPainter(ITable scoutTable, ISwtEnvironment swtEnvironment, ICellPainter wrappedPainter) {
-    super(wrappedPainter);
+    super(wrappedPainter, 0);
     m_scoutTable = scoutTable;
     m_swtEnvironment = swtEnvironment;
     m_sizeCache = new HashMap<Point, P_CellSize>();
@@ -124,7 +124,7 @@ public class StringColumnPainter extends AbstractStringColumnPainter {
       String text = convertDataType(cell, configRegistry);
 
       // Draw Text
-      text = getTextToDisplay(cell, gc, rectangle.width, text, isMultilineText(), isWrapText(cellStyle));
+      text = getTextToDisplay(cell, gc, rectangle.width - 2 * getSpacing(), text, isMultilineText(), isWrapText(cellStyle));
 
       int numberOfNewLines = getLines(text).length;
 
@@ -132,14 +132,12 @@ public class StringColumnPainter extends AbstractStringColumnPainter {
       //we're extending the row height (only if word wrapping is enabled)
       int spacing = getSpacing();
       int contentHeight = (fontHeight * numberOfNewLines) + (spacing * 2);
-      int contentToCellDiff = (cell.getBounds().height - rectangle.height);
 
       if (numberOfNewLines == 1) {
         int contentWidth = Math.min(getLengthFromCache(gc, text), rectangle.width);
-
         gc.drawText(
             text,
-            rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth) + spacing,
+            rectangle.x + CellStyleUtil.getHorizontalAlignmentPadding(cellStyle, rectangle, contentWidth + 2 * spacing) + spacing,
             rectangle.y + CellStyleUtil.getVerticalAlignmentPadding(cellStyle, rectangle, contentHeight) + spacing,
             SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER
             );

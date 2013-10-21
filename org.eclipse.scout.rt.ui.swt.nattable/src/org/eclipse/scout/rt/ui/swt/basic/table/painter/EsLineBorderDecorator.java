@@ -20,6 +20,7 @@ import org.eclipse.nebula.widgets.nattable.style.CellStyleUtil;
 import org.eclipse.nebula.widgets.nattable.style.IStyle;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 
 /**
  *
@@ -69,6 +70,12 @@ public class EsLineBorderDecorator extends LineBorderDecorator implements IDynam
       size = new Point(Math.max((borderThickness * 2), wHint), Math.max((borderThickness * 2), hHint));
     }
     return size;
+  }
+
+  @Override
+  public void paintCell(ILayerCell cell, GC gc, Rectangle rectangle, IConfigRegistry configRegistry) {
+//    System.out.println("*** " + getClass().getName() + " paintCell: " + rectangle.toString());
+    super.paintCell(cell, gc, rectangle, configRegistry);
   }
 
 }

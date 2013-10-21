@@ -32,6 +32,7 @@ import org.eclipse.scout.rt.ui.swt.basic.table.painter.ESHorizontalAlignmentDeco
 import org.eclipse.scout.rt.ui.swt.basic.table.painter.EsCheckboxPainter;
 import org.eclipse.scout.rt.ui.swt.basic.table.painter.EsLineBorderDecorator;
 import org.eclipse.scout.rt.ui.swt.basic.table.painter.EsPaddingDecorator;
+import org.eclipse.scout.rt.ui.swt.basic.table.painter.ScoutImagePainter;
 import org.eclipse.scout.rt.ui.swt.basic.table.painter.StringColumnPainter;
 
 /**
@@ -54,8 +55,8 @@ public class BodyLayerConfiguration extends AbstractRegistryConfiguration implem
   public BodyLayerConfiguration(ITable scoutTable, ISwtEnvironment environment) {
     m_scoutTable = scoutTable;
     // init painters
-    m_stringColumnPainter = createDefaultPainterStack(new StringColumnPainter(scoutTable, environment));
-    m_booleanColumnPainter = createDefaultPainterStack(new EsCheckboxPainter(environment));
+    m_stringColumnPainter = createDefaultPainterStack(new StringColumnPainter(scoutTable, environment), environment);
+    m_booleanColumnPainter = createDefaultPainterStack(new EsCheckboxPainter(environment), environment);
   }
 
   public ITable getScoutTable() {
@@ -131,8 +132,10 @@ public class BodyLayerConfiguration extends AbstractRegistryConfiguration implem
     configRegistry.registerConfigAttribute(CellConfigAttributes.DISPLAY_CONVERTER, new StringColumnDisplayConverter());
   }
 
-  private ICellPainter createDefaultPainterStack(ICellPainter dataPainter) {
-    ICellPainter painter = new ESHorizontalAlignmentDecorator(dataPainter, getScoutTable());
+  private ICellPainter createDefaultPainterStack(ICellPainter dataPainter, ISwtEnvironment environment) {
+    ICellPainter painter = dataPainter;
+    painter = new ScoutImagePainter(dataPainter, getScoutTable(), environment);
+    painter = new ESHorizontalAlignmentDecorator(painter, getScoutTable());
     painter = new EsPaddingDecorator(painter, 2);
     painter = new EsLineBorderDecorator(painter);
     return painter;
