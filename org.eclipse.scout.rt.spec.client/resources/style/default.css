@@ -1,0 +1,23 @@
+/* Table */
+table {
+   width: 98%;
+  border: none;
+  margin: 1em auto;
+  border-collapse: collapse;
+}
+
+
+
+td {
+  color: black;
+  border: solid thin #0082A1;
+  padding: .1em 1em;
+  text-align: left;
+}
+
+th {
+  color: #67A8CE;
+  border: solid thin #0082A1;
+  padding: .1em 1em;
+  text-align: left;
+}

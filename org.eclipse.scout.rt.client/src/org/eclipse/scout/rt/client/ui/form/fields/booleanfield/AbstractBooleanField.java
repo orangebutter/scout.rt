@@ -63,9 +63,7 @@ public abstract class AbstractBooleanField extends AbstractValueField<Boolean> i
   // validate value for ranges
   @Override
   protected Boolean validateValueInternal(Boolean rawValue) throws ProcessingException {
-    Boolean validValue = null;
-    rawValue = super.validateValueInternal(rawValue);
-    validValue = rawValue;
+    Boolean validValue = super.validateValueInternal(rawValue);
     if (validValue == null) {
       validValue = false;
     }

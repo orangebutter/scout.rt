@@ -244,14 +244,8 @@ public abstract class AbstractValueField<T> extends AbstractFormField implements
 
   @Override
   public final void setValue(T rawValue) {
-    /**
-     * @rn imo, 22.02.2006, set verifyInput flag while firing triggers when a
-     *     message box is shown, the doOK of the form might overrun this
-     *     command. setting isVerifyInput() cancels the ok task
-     */
     if (isValueChanging()) {
-      Exception caller1 = new Exception();
-      LOG.warn("Loop detection in " + getClass().getName() + " with value " + rawValue, caller1);
+      LOG.warn("Loop detection in " + getClass().getName() + " with value " + rawValue, new Exception());
       return;
     }
     try {
