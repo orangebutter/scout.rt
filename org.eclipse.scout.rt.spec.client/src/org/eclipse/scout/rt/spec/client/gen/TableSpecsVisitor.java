@@ -13,6 +13,7 @@ package org.eclipse.scout.rt.spec.client.gen;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.scout.commons.CollectionUtility;
 import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.form.IFormFieldVisitor;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
@@ -55,16 +56,14 @@ public class TableSpecsVisitor implements IFormFieldVisitor {
    * @param c
    */
   private TableDescriptor createTableDesc(IColumn<?>[] columns) {
-    final List<List<String>> rows = new ArrayList<List<String>>();
+    final List<String[]> rows = new ArrayList<String[]>();
     for (IColumn c : columns) {
-      List<String> row = new ArrayList<String>();
-      for (IDocProperty<IColumn> p : m_columnProperties) {
-        row.add(p.getText(c));
-      }
+      String[] row = DocPropertyUtility.getPropertyRow(m_columnProperties, c);
       rows.add(row);
     }
-    List<String> headers = DocPropertyUtility.getHeaders(m_columnProperties);
-    return new TableDescriptor(rows, headers);
+    String[][] rowArray = CollectionUtility.toArray(rows, String[].class);
+    String[] headers = DocPropertyUtility.getHeaders(m_columnProperties);
+    return new TableDescriptor(rowArray, headers);
   }
 
   public List<TableFieldDescriptor> getTableFieldDescriptors() {

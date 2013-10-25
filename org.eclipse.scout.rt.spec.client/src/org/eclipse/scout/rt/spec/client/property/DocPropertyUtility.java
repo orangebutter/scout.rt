@@ -13,6 +13,8 @@ package org.eclipse.scout.rt.spec.client.property;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.scout.commons.CollectionUtility;
+
 /**
  *
  */
@@ -21,12 +23,20 @@ public final class DocPropertyUtility {
   private DocPropertyUtility() {
   }
 
-  public static List<String> getHeaders(List<? extends IDocProperty> properties) {
+  public static String[] getHeaders(List<? extends IDocProperty> properties) {
     List<String> headers = new ArrayList<String>();
     for (IDocProperty p : properties) {
       headers.add(p.getHeader());
     }
-    return headers;
+    return CollectionUtility.toArray(headers, String.class);
   }
 
+  public static <T> String[] getPropertyRow(List<IDocProperty<T>> properties, T form) {
+    String[] row = new String[properties.size()];
+    for (int i = 0; i < properties.size(); i++) {
+      IDocProperty<T> p = properties.get(i);
+      row[i] = p.getText(form);
+    }
+    return row;
+  }
 }

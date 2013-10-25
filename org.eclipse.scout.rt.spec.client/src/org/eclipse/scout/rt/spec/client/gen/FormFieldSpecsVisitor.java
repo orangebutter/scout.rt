@@ -13,8 +13,10 @@ package org.eclipse.scout.rt.spec.client.gen;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.scout.commons.CollectionUtility;
 import org.eclipse.scout.rt.client.ui.form.IFormFieldVisitor;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
+import org.eclipse.scout.rt.spec.client.property.DocPropertyUtility;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
@@ -22,7 +24,7 @@ import org.eclipse.scout.rt.spec.client.property.IDocProperty;
  */
 public class FormFieldSpecsVisitor implements IFormFieldVisitor {
   private final List<IDocProperty<IFormField>> m_properties;
-  private final List<List<String>> m_rows = new ArrayList<List<String>>();
+  private final List<String[]> m_rows = new ArrayList<String[]>();
 
   public FormFieldSpecsVisitor(List<IDocProperty<IFormField>> properties) {
     m_properties = properties;
@@ -30,16 +32,13 @@ public class FormFieldSpecsVisitor implements IFormFieldVisitor {
 
   @Override
   public boolean visitField(IFormField field, int level, int fieldIndex) {
-    List<String> row = new ArrayList<String>();
-    for (IDocProperty<IFormField> p : m_properties) {
-      row.add(p.getText(field));
-    }
+    String[] row = DocPropertyUtility.getPropertyRow(m_properties, field);
     m_rows.add(row);
     return true;
   }
 
-  public List<List<String>> getRows() {
-    return m_rows;
+  public String[][] getRows() {
+    return CollectionUtility.toArray(m_rows, String[].class);
   }
 
 }

@@ -23,16 +23,34 @@ import org.eclipse.scout.rt.spec.client.property.IDocProperty;
  */
 public interface ISpecTemplate {
 
-  public List<IDocProperty<IFormField>> getFieldProperties();
-
+  /**
+   * Configuration for documenting {@link IForm}.
+   * 
+   * @return a list of properties that should be generated.
+   */
   public List<IDocProperty<IForm>> getFormProperties();
 
-  public IDocProperty<IForm> getFormTitleProperty();
+  /**
+   * Configuration for documenting {@link IFormField}.
+   * 
+   * @return a list of properties that should be generated.
+   */
+  public List<IDocProperty<IFormField>> getFieldProperties();
 
-  public IDocProperty<IForm> getFormIdProperty();
-
+  /**
+   * Configuration for documenting {@link IColumn}.
+   * 
+   * @return a list of properties that should be generated.
+   */
   public List<IDocProperty<IColumn>> getColumnProperties();
 
+  /**
+   * @return
+   */
+  public IDocProperty<IForm> getFormTitleProperty();
+
   public IDocProperty<ITableField<?>> getTableTitleProperty();
+
+  public IDocProperty<IForm> getFormIdProperty();
 
 }

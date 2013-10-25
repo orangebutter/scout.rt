@@ -10,25 +10,24 @@
  ******************************************************************************/
 package org.eclipse.scout.rt.spec.client.out;
 
-import java.util.List;
 
 /**
  *
  */
 public class TableDescriptor {
-  private final List<List<String>> m_cellTexts;
-  private final List<String> m_headerTexts;
+  private final String[][] m_cellTexts;
+  private final String[] m_headerTexts;
 
-  public TableDescriptor(List<List<String>> cellTexts, List<String> headerTexts) {
+  public TableDescriptor(String[][] cellTexts, String[] headerTexts) {
     m_cellTexts = cellTexts;
     m_headerTexts = headerTexts;
   }
 
-  public List<List<String>> getCellTexts() {
+  public String[][] getCellTexts() {
     return m_cellTexts;
   }
 
-  public List<String> getHeaderTexts() {
+  public String[] getHeaderTexts() {
     return m_headerTexts;
   }
 

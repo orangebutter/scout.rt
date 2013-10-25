@@ -42,7 +42,7 @@ public class WikimediaFormWriter {
     try {
       WikimediaWriter fieldWriter = new WikimediaWriter(m_writer);
       fieldWriter.appendHeading(m_formDesc.getTitle(), 2);
-      fieldWriter.appendTable(m_formDesc.getFormProperties());
+      fieldWriter.appendTableTransposed(m_formDesc.getFormProperties());
       String image = m_images.get(m_formDesc.getId());
       fieldWriter.appendImageLink(image, imageScale);
       fieldWriter.appendTable(m_formDesc.getFieldProperties());
