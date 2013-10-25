@@ -13,14 +13,21 @@ package org.eclipse.scout.rt.spec.client.property.template;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
+import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.stringfield.IStringField;
+import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
 import org.eclipse.scout.rt.shared.TEXTS;
-import org.eclipse.scout.rt.spec.client.property.form.BooleanFormFieldDocProperty;
-import org.eclipse.scout.rt.spec.client.property.form.IFormFieldDocProperty;
-import org.eclipse.scout.rt.spec.client.property.form.IdFormFieldDocProperty;
-import org.eclipse.scout.rt.spec.client.property.form.TextFormFieldDocProperty;
-import org.eclipse.scout.rt.spec.client.property.form.TypeFormFieldDocProperty;
+import org.eclipse.scout.rt.spec.client.property.DocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
+import org.eclipse.scout.rt.spec.client.property.SimpleTypeProperty;
+import org.eclipse.scout.rt.spec.client.property.TypeProperty;
+import org.eclipse.scout.rt.spec.client.property.column.LabelColumnProperty;
+import org.eclipse.scout.rt.spec.client.property.form.TitleFormProperty;
+import org.eclipse.scout.rt.spec.client.property.form.field.BooleanFormFieldProperty;
+import org.eclipse.scout.rt.spec.client.property.form.field.TableFieldTypeAndLabelProperty;
+import org.eclipse.scout.rt.spec.client.property.form.field.TextFormFieldProperty;
 
 /**
  *
@@ -28,16 +35,47 @@ import org.eclipse.scout.rt.spec.client.property.form.TypeFormFieldDocProperty;
 public class SimpleSpecTemplate implements ISpecTemplate {
 
   @Override
-  public List<IFormFieldDocProperty> getFieldProperties() {
-    List<IFormFieldDocProperty> propertyTemplate = new ArrayList<IFormFieldDocProperty>();
-    propertyTemplate.add(new IdFormFieldDocProperty(TEXTS.get("org.eclipse.scout.rt.spec.id")));
-    propertyTemplate.add(new TextFormFieldDocProperty(IFormField.PROP_LABEL, TEXTS.get("org.eclipse.scout.rt.spec.label")));
-    propertyTemplate.add(new TypeFormFieldDocProperty(TEXTS.get("org.eclipse.scout.rt.spec.type")));
-    propertyTemplate.add(new TextFormFieldDocProperty(IStringField.PROP_MAX_LENGTH, TEXTS.get("org.eclipse.scout.rt.spec.length")));
-    propertyTemplate.add(new BooleanFormFieldDocProperty(IFormField.PROP_MANDATORY, TEXTS.get("org.eclipse.scout.rt.spec.mandatory")));
-    propertyTemplate.add(new BooleanFormFieldDocProperty(IFormField.PROP_ENABLED, TEXTS.get("org.eclipse.scout.rt.spec.enabled")));
-    propertyTemplate.add(new TextFormFieldDocProperty(IFormField.PROP_TOOLTIP_TEXT, TEXTS.get("org.eclipse.scout.rt.spec.tooltip")));
+  public List<IDocProperty<IFormField>> getFieldProperties() {
+    List<IDocProperty<IFormField>> propertyTemplate = new ArrayList<IDocProperty<IFormField>>();
+    propertyTemplate.add(new TextFormFieldProperty(IFormField.PROP_LABEL, TEXTS.get("org.eclipse.scout.rt.spec.label")));
+    propertyTemplate.add(new SimpleTypeProperty<IFormField>());
+    propertyTemplate.add(new TextFormFieldProperty(IStringField.PROP_MAX_LENGTH, TEXTS.get("org.eclipse.scout.rt.spec.length")));
+    propertyTemplate.add(new BooleanFormFieldProperty(IFormField.PROP_MANDATORY, TEXTS.get("org.eclipse.scout.rt.spec.mandatory")));
+    propertyTemplate.add(new BooleanFormFieldProperty(IFormField.PROP_ENABLED, TEXTS.get("org.eclipse.scout.rt.spec.enabled")));
+    propertyTemplate.add(new TextFormFieldProperty(IFormField.PROP_TOOLTIP_TEXT, TEXTS.get("org.eclipse.scout.rt.spec.tooltip")));
+    propertyTemplate.add(new DocProperty<IFormField>());
     return propertyTemplate;
   }
 
+  @Override
+  public List<IDocProperty<IForm>> getFormProperties() {
+    List<IDocProperty<IForm>> propertyTemplate = new ArrayList<IDocProperty<IForm>>();
+    propertyTemplate.add(new TitleFormProperty());
+    propertyTemplate.add(new DocProperty<IForm>());
+    return propertyTemplate;
+  }
+
+  @Override
+  public IDocProperty<IForm> getFormTitleProperty() {
+    return new TitleFormProperty();
+  }
+
+  @Override
+  public IDocProperty<IForm> getFormIdProperty() {
+    return new TypeProperty<IForm>();
+  }
+
+  @Override
+  public List<IDocProperty<IColumn>> getColumnProperties() {
+    List<IDocProperty<IColumn>> propertyTemplate = new ArrayList<IDocProperty<IColumn>>();
+    propertyTemplate.add(new LabelColumnProperty());
+    propertyTemplate.add(new SimpleTypeProperty<IColumn>());
+    propertyTemplate.add(new DocProperty<IColumn>());
+    return propertyTemplate;
+  }
+
+  @Override
+  public IDocProperty<ITableField<?>> getTableTitleProperty() {
+    return new TableFieldTypeAndLabelProperty();
+  }
 }

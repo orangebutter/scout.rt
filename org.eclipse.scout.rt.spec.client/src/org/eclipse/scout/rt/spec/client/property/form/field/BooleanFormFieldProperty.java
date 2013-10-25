@@ -1,16 +1,18 @@
-package org.eclipse.scout.rt.spec.client.property.form;
+package org.eclipse.scout.rt.spec.client.property.form.field;
 
 import org.eclipse.scout.commons.StringUtility;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.shared.TEXTS;
+import org.eclipse.scout.rt.spec.client.property.AbstractNamedDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
-public class BooleanFormFieldDocProperty extends AbstractDocProperty implements IFormFieldDocProperty {
+public class BooleanFormFieldProperty extends AbstractNamedDocProperty<IFormField> implements IDocProperty<IFormField> {
   public static final String DOC_ID_TRUE = "org.eclipse.scout.rt.spec.true";
   public static final String DOC_ID_FALSE = "org.eclipse.scout.rt.spec.false";
 
   private final String m_propertyName;
 
-  public BooleanFormFieldDocProperty(String propertyName, String header) {
+  public BooleanFormFieldProperty(String propertyName, String header) {
     super(header);
     m_propertyName = propertyName;
 

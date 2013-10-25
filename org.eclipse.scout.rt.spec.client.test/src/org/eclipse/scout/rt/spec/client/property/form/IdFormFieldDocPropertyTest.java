@@ -14,7 +14,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.eclipse.scout.rt.client.ui.form.fields.AbstractFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
-import org.eclipse.scout.rt.spec.client.property.form.IdFormFieldDocProperty;
+import org.eclipse.scout.rt.spec.client.property.form.field.IdFormFieldProperty;
 import org.junit.Test;
 
 /**
@@ -28,7 +28,7 @@ public class IdFormFieldDocPropertyTest {
   @Test
   public void testIDText() {
     IFormField testField = new TestFormField();
-    IdFormFieldDocProperty p = new IdFormFieldDocProperty("Id");
+    IdFormFieldProperty p = new IdFormFieldProperty("Id");
 
     String actualText = p.getText(testField);
     assertEquals("Doc Text Invalid", TestFormField.class.getName(), actualText);

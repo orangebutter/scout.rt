@@ -8,16 +8,19 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.gen;
+package org.eclipse.scout.rt.spec.client;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
@@ -26,11 +29,12 @@ import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.spec.client.converter.DocBookConverter;
 import org.eclipse.scout.rt.spec.client.converter.HtmlConverter;
 import org.eclipse.scout.rt.spec.client.converter.TemplateUtility;
-import org.eclipse.scout.rt.spec.client.out.TableDescriptor;
+import org.eclipse.scout.rt.spec.client.gen.FormSpecGenerator;
+import org.eclipse.scout.rt.spec.client.gen.SpecImageFilter;
+import org.eclipse.scout.rt.spec.client.out.FormDescriptor;
 import org.eclipse.scout.rt.spec.client.property.template.SimpleSpecTemplate;
 import org.eclipse.scout.rt.spec.client.screenshot.PrintFormListener;
-import org.eclipse.scout.rt.spec.client.writer.FormFieldSpecGenerator;
-import org.eclipse.scout.rt.spec.client.writer.FormFieldWikimediaWriter;
+import org.eclipse.scout.rt.spec.client.writer.WikimediaFormWriter;
 import org.osgi.framework.Bundle;
 
 /**
@@ -47,44 +51,83 @@ public abstract class AbstractFormSpecGen {
   }
 
   public void printAllFields() throws ProcessingException {
+    // prepare form
+    IForm form = createAndStartForm();
+
+    //template
+    SimpleSpecTemplate template = new SimpleSpecTemplate();
+
+    // get the data
+    String formId = form.getClass().getName();
+    FormSpecGenerator g = new FormSpecGenerator(template);
+    FormDescriptor specData = g.getSpecData(form);
+
+    // write
+    File out = getSpecDir();
+    out.mkdirs();
+    File wiki = createMediaWikiFile(out, formId);
+    Writer mediaWikiWriter = createWriter(wiki);
+    Map<String, String> images = getImages(out);
+    WikimediaFormWriter wikimediaFormWriter = new WikimediaFormWriter(mediaWikiWriter, specData, images);
+    wikimediaFormWriter.write();
+
+    convertToHTML(out, formId, wiki);
+  }
+
+  private Map<String, String> getImages(File dir) {
+    String[] files = dir.list(new SpecImageFilter());
+    HashMap<String, String> map = new HashMap<String, String>();
+    for (String file : files) {
+      String id = file.replace(".jpg", "");
+      map.put(id, file);
+    }
+    return map;
+  }
+
+  protected File convertToDocBook(File out, String id, File mediaWiki) {
+    File docBook = new File(out, id + ".xml");
+    DocBookConverter c = new DocBookConverter();
+    c.convertWikiToDocBook(mediaWiki, docBook);
+    return docBook;
+  }
+
+  private File convertToHTML(File out, String id, File mediaWiki) throws ProcessingException {
     try {
-      // prepare form
-      IForm form = createAndStartForm();
-
-      //template
-      SimpleSpecTemplate template = new SimpleSpecTemplate();
-
-      // get the data
-      FormFieldSpecGenerator g = new FormFieldSpecGenerator(template.getFieldProperties());
-      TableDescriptor specData = g.getSpecData(form);
-
-      // write
-      File out = getSpecDir();
-      out.mkdirs();
-
-      File tableFile = new File(out, form.getClass().getName() + ".mediawiki");
-      tableFile.createNewFile();
-      BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tableFile.getPath()), ENCODING));
-
-      FormFieldWikimediaWriter fieldWriter = new FormFieldWikimediaWriter(writer, specData);
-      fieldWriter.writeTable(form);
-
       // copy css
       File css = new File(getSpecDir(), "default.css");
       TemplateUtility.copyDefaultCss(css);
 
-      // html
-      File htmlFile = new File(out, form.getClass().getName() + ".html");
+      File htmlFile = new File(out, id + ".html");
       HtmlConverter htmlConverter = new HtmlConverter(css);
-      htmlConverter.convertWikiToHtml(tableFile, htmlFile);
-
-      // docbook
-      File docBook = new File(out, form.getClass().getName() + ".xml");
-      DocBookConverter c = new DocBookConverter();
-      c.convertWikiToDocBook(tableFile, docBook);
+      htmlConverter.convertWikiToHtml(mediaWiki, htmlFile);
+      return htmlFile;
     }
     catch (IOException e) {
-      throw new ProcessingException("Error printing form.", e);
+      throw new ProcessingException("Error writing mediawiki file.", e);
+    }
+  }
+
+  private File createMediaWikiFile(File out, String id) throws ProcessingException {
+    File tableFile = new File(out, id + ".mediawiki");
+    try {
+      if (tableFile.exists()) {
+        tableFile.delete();
+      }
+      tableFile.createNewFile();
+      return tableFile;
+    }
+    catch (IOException e) {
+      throw new ProcessingException("Error writing mediawiki file.", e);
+    }
+  }
+
+  private BufferedWriter createWriter(File mediaWiki) throws ProcessingException {
+    try {
+      FileOutputStream outputStream = new FileOutputStream(mediaWiki.getPath(), true);
+      return new BufferedWriter(new OutputStreamWriter(outputStream, ENCODING));
+    }
+    catch (IOException e) {
+      throw new ProcessingException("Error writing mediawiki file.", e);
     }
   }
 

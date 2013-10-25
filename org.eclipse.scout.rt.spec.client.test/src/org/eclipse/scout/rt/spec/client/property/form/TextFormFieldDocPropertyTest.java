@@ -12,16 +12,17 @@ package org.eclipse.scout.rt.spec.client.property.form;
 
 import org.eclipse.scout.rt.client.ui.form.fields.AbstractFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
+import org.eclipse.scout.rt.spec.client.property.form.field.TextFormFieldProperty;
 import org.junit.Assert;
 import org.junit.Test;
 
 /**
- * Test for {@link TextFormFieldDocProperty}
+ * Test for {@link TextFormFieldProperty}
  */
 public class TextFormFieldDocPropertyTest {
 
   /**
-   * Test {@link TextFormFieldDocProperty#getText(IFormField)} for a label.
+   * Test {@link TextFormFieldProperty#getText(IFormField)} for a label.
    */
   @Test
   public void testSpecsPropertyLabel() {
@@ -29,21 +30,21 @@ public class TextFormFieldDocPropertyTest {
     };
     String testLabel = "testLabel";
     fieldWithLabel.setLabel(testLabel);
-    TextFormFieldDocProperty p = new TextFormFieldDocProperty(IFormField.PROP_LABEL, "Label");
+    TextFormFieldProperty p = new TextFormFieldProperty(IFormField.PROP_LABEL, "Label");
 
     String actualText = p.getText(fieldWithLabel);
     Assert.assertEquals("Boolean Doc Text Invalid", testLabel, actualText);
   }
 
   /**
-   * Test {@link TextFormFieldDocProperty#getText(IFormField)} for a label.
+   * Test {@link TextFormFieldProperty#getText(IFormField)} for a label.
    */
   @Test
   public void testSpecsPropertyNullLabel() {
     IFormField fieldWithLabel = new AbstractFormField() {
     };
     fieldWithLabel.setLabel(null);
-    TextFormFieldDocProperty p = new TextFormFieldDocProperty(IFormField.PROP_LABEL, "Label");
+    TextFormFieldProperty p = new TextFormFieldProperty(IFormField.PROP_LABEL, "Label");
 
     String actualText = p.getText(fieldWithLabel);
     Assert.assertEquals("Boolean Doc Text Invalid", "", actualText);

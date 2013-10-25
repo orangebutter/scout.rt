@@ -20,6 +20,7 @@ import org.eclipse.scout.commons.beans.IPropertyFilter;
 import org.eclipse.scout.commons.beans.IPropertyObserver;
 import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.commons.xmlparser.SimpleXmlElement;
+import org.eclipse.scout.rt.client.ui.IDocumentable;
 import org.eclipse.scout.rt.client.ui.IEventHistory;
 import org.eclipse.scout.rt.client.ui.desktop.AbstractDesktop;
 import org.eclipse.scout.rt.client.ui.desktop.DesktopEvent;
@@ -47,7 +48,7 @@ import org.eclipse.scout.rt.shared.services.common.jdbc.SearchFilter;
  * <b>handler</b> is reponsible for loading from data and storing data. This usually involves calling process services
  * on the server. These will in turn contact a persistence layer such as a database.
  */
-public interface IForm extends IPropertyObserver {
+public interface IForm extends IPropertyObserver, IDocumentable {
 
   String PROP_TITLE = "title";
   String PROP_MINIMIZE_ENABLED = "minimizeEnabled";

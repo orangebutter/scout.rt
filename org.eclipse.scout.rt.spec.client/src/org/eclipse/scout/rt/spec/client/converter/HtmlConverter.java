@@ -46,6 +46,7 @@ public class HtmlConverter {
       parser.setBuilder(builder);
       Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(in.getPath()), "utf-8"));
       parser.parse(reader);
+
       htmlWriter.flush();
       htmlWriter.close();
     }

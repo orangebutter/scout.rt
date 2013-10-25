@@ -8,21 +8,28 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property.form;
+package org.eclipse.scout.rt.spec.client.property.form.field;
 
 import org.eclipse.scout.rt.client.ui.form.fields.ICompositeField;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
+import org.eclipse.scout.rt.shared.TEXTS;
+import org.eclipse.scout.rt.spec.client.property.AbstractNamedDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
  *
  */
-public class IdFormFieldDocProperty extends AbstractDocProperty implements IFormFieldDocProperty {
+public class IdFormFieldProperty extends AbstractNamedDocProperty<IFormField> implements IDocProperty<IFormField> {
 
   /**
    * @param name
    */
-  public IdFormFieldDocProperty(String name) {
+  public IdFormFieldProperty(String name) {
     super(name);
+  }
+
+  public IdFormFieldProperty() {
+    this(TEXTS.get("org.eclipse.scout.rt.spec.id"));
   }
 
   /**
@@ -34,6 +41,7 @@ public class IdFormFieldDocProperty extends AbstractDocProperty implements IForm
   }
 
   public String getUniqueFieldId(IFormField formField) {
+    //TODO move to form?
     StringBuilder uniqueId = new StringBuilder();
     uniqueId.append(formField.getClass().getName());
     for (ICompositeField enclosingField : formField.getEnclosingFieldList()) {

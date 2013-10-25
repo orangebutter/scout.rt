@@ -456,6 +456,11 @@ public abstract class AbstractColumn<T> extends AbstractPropertyObserver impleme
     return null;
   }
 
+  @Override
+  public String getDoc() {
+    return getConfiguredDoc();
+  }
+
   /**
    * Configures whether this column value is mandatory / required. This only affects editable columns (see
    * {@link #getConfiguredEditable()} ).
@@ -1563,11 +1568,15 @@ public abstract class AbstractColumn<T> extends AbstractPropertyObserver impleme
       try {
         if (editor == null) {
           m_isValidating = true;
-          editor = prepareEdit(row);
-          if (editor instanceof IValueField<?>) {
-            ((IValueField<T>) editor).setValue(value);
+          try {
+            editor = prepareEdit(row);
+            if (editor instanceof IValueField<?>) {
+              ((IValueField<T>) editor).setValue(value);
+            }
           }
-          m_isValidating = false;
+          finally {
+            m_isValidating = false;
+          }
         }
         if (editor != null) {
           IProcessingStatus errorStatus = editor.getErrorStatus();

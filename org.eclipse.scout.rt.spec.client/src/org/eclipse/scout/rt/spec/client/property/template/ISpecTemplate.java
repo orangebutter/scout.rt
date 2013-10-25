@@ -12,13 +12,27 @@ package org.eclipse.scout.rt.spec.client.property.template;
 
 import java.util.List;
 
-import org.eclipse.scout.rt.spec.client.property.form.IFormFieldDocProperty;
+import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
+import org.eclipse.scout.rt.client.ui.form.IForm;
+import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
+import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
  *
  */
 public interface ISpecTemplate {
 
-  public List<IFormFieldDocProperty> getFieldProperties();
+  public List<IDocProperty<IFormField>> getFieldProperties();
+
+  public List<IDocProperty<IForm>> getFormProperties();
+
+  public IDocProperty<IForm> getFormTitleProperty();
+
+  public IDocProperty<IForm> getFormIdProperty();
+
+  public List<IDocProperty<IColumn>> getColumnProperties();
+
+  public IDocProperty<ITableField<?>> getTableTitleProperty();
 
 }

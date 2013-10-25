@@ -14,6 +14,7 @@ import java.security.Permission;
 
 import org.eclipse.scout.commons.beans.IPropertyObserver;
 import org.eclipse.scout.commons.exception.ProcessingException;
+import org.eclipse.scout.rt.client.ui.IDocumentable;
 import org.eclipse.scout.rt.client.ui.basic.table.ColumnSet;
 import org.eclipse.scout.rt.client.ui.basic.table.IHeaderCell;
 import org.eclipse.scout.rt.client.ui.basic.table.ITable;
@@ -21,7 +22,7 @@ import org.eclipse.scout.rt.client.ui.basic.table.ITableRow;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.shared.data.basic.FontSpec;
 
-public interface IColumn<T> extends IPropertyObserver {
+public interface IColumn<T> extends IPropertyObserver, IDocumentable {
   /**
    * type boolean
    */
@@ -410,7 +411,7 @@ public interface IColumn<T> extends IPropertyObserver {
   void setAutoOptimizeWidth(boolean optimize);
 
   boolean isMandatory();
-  
+
   void setMandatory(boolean mandatory);
 
 }

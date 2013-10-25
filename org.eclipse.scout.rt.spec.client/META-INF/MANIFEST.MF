@@ -5,10 +5,11 @@ Bundle-SymbolicName: org.eclipse.scout.rt.spec.client;singleton:=true
 Bundle-Version: 3.10.0.qualifier
 Bundle-Activator: org.eclipse.scout.rt.spec.client.internal.Activator
 Bundle-Vendor: Eclipse Scout Project
-Export-Package: org.eclipse.scout.rt.spec.client.converter,
+Export-Package: org.eclipse.scout.rt.spec.client,
+ org.eclipse.scout.rt.spec.client.converter,
  org.eclipse.scout.rt.spec.client.gen,
  org.eclipse.scout.rt.spec.client.out,
- org.eclipse.scout.rt.spec.client.property.form,
+ org.eclipse.scout.rt.spec.client.property.form.field,
  org.eclipse.scout.rt.spec.client.property.template,
  org.eclipse.scout.rt.spec.client.screenshot,
  org.eclipse.scout.rt.spec.client.text,

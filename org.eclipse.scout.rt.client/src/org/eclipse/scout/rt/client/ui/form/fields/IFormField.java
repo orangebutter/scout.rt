@@ -19,6 +19,7 @@ import org.eclipse.scout.commons.beans.IPropertyObserver;
 import org.eclipse.scout.commons.exception.IProcessingStatus;
 import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.commons.xmlparser.SimpleXmlElement;
+import org.eclipse.scout.rt.client.ui.IDocumentable;
 import org.eclipse.scout.rt.client.ui.action.keystroke.IKeyStroke;
 import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.PrintDevice;
@@ -60,7 +61,7 @@ import org.eclipse.scout.rt.shared.services.common.jdbc.SearchFilter;
  * 
  * @see IForm
  */
-public interface IFormField extends IPropertyObserver {
+public interface IFormField extends IPropertyObserver, IDocumentable {
   /*
    * Properties
    */

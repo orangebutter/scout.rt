@@ -199,6 +199,11 @@ public abstract class AbstractForm extends AbstractPropertyObserver implements I
     return null;
   }
 
+  @Override
+  public String getDoc() {
+    return getConfiguredDoc();
+  }
+
   @ConfigProperty(ConfigProperty.TEXT)
   @Order(90)
   protected String getConfiguredCancelVerificationText() {

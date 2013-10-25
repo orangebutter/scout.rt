@@ -8,24 +8,13 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property.form;
+package org.eclipse.scout.rt.client.ui;
 
 /**
  *
  */
-public class AbstractDocProperty {
-  private final String m_name;
+public interface IDocumentable {
 
-  /**
-   * @param name
-   *          the (language specific) name of the property
-   */
-  public AbstractDocProperty(String name) {
-    m_name = name;
-  }
-
-  public String getHeader() {
-    return m_name;
-  }
+  public String getDoc();
 
 }

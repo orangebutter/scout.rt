@@ -8,38 +8,38 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.writer;
+package org.eclipse.scout.rt.spec.client.gen;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.scout.rt.client.ui.form.IFormFieldVisitor;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
-import org.eclipse.scout.rt.spec.client.property.form.IFormFieldDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
  * Collects form field properties
  */
 public class FormFieldSpecsVisitor implements IFormFieldVisitor {
-	private final List<IFormFieldDocProperty> m_properties;
-	private final List<List<String>> m_rows = new ArrayList<List<String>>();
+  private final List<IDocProperty<IFormField>> m_properties;
+  private final List<List<String>> m_rows = new ArrayList<List<String>>();
 
-	public FormFieldSpecsVisitor(List<IFormFieldDocProperty> properties) {
-		m_properties = properties;
-	}
+  public FormFieldSpecsVisitor(List<IDocProperty<IFormField>> properties) {
+    m_properties = properties;
+  }
 
-	@Override
-	public boolean visitField(IFormField field, int level, int fieldIndex) {
-		List<String> row = new ArrayList<String>();
-		for (IFormFieldDocProperty p : m_properties) {
-			row.add(p.getText(field));
-		}
-		m_rows.add(row);
-		return true;
-	}
+  @Override
+  public boolean visitField(IFormField field, int level, int fieldIndex) {
+    List<String> row = new ArrayList<String>();
+    for (IDocProperty<IFormField> p : m_properties) {
+      row.add(p.getText(field));
+    }
+    m_rows.add(row);
+    return true;
+  }
 
-	public List<List<String>> getRows() {
-		return m_rows;
-	}
+  public List<List<String>> getRows() {
+    return m_rows;
+  }
 
 }

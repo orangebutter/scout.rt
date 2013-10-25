@@ -8,18 +8,20 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property.form;
+package org.eclipse.scout.rt.spec.client.property.form.field;
 
 import org.eclipse.scout.commons.StringUtility;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
+import org.eclipse.scout.rt.spec.client.property.AbstractNamedDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
  *
  */
-public class TextFormFieldDocProperty extends AbstractDocProperty implements IFormFieldDocProperty {
+public class TextFormFieldProperty extends AbstractNamedDocProperty<IFormField> implements IDocProperty<IFormField> {
   private final String m_propertyName;
 
-  public TextFormFieldDocProperty(String propertyName, String header) {
+  public TextFormFieldProperty(String propertyName, String header) {
     super(header);
     m_propertyName = propertyName;
   }

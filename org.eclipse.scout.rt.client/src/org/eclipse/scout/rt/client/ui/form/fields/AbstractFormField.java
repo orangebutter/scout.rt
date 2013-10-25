@@ -1660,6 +1660,11 @@ public abstract class AbstractFormField extends AbstractPropertyObserver impleme
   }
 
   @Override
+  public String getDoc() {
+    return getConfiguredDoc();
+  }
+
+  @Override
   public void updateKeyStrokes() {
     HashMap<String, IKeyStroke> ksMap = new HashMap<String, IKeyStroke>();
     //

@@ -8,24 +8,26 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property.form;
+package org.eclipse.scout.rt.spec.client.property;
 
-import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
+import org.eclipse.scout.rt.shared.TEXTS;
 
 /**
- * Provides header description and text for a given form field.
+ *
  */
-public interface IFormFieldDocProperty {
+public class SimpleTypeProperty<T> extends AbstractNamedDocProperty<T> implements IDocProperty<T> {
 
-	/**
-	 * @return header description for a this property
-	 */
-	public String getHeader();
+  public SimpleTypeProperty(String name) {
+    super(name);
+  }
 
-	/**
-	 * @param field
-	 * @return value of the property
-	 */
-	public String getText(IFormField field);
+  public SimpleTypeProperty() {
+    this(TEXTS.get("org.eclipse.scout.rt.spec.type"));
+  }
+
+  @Override
+  public String getText(T object) {
+    return object.getClass().getSimpleName();
+  }
 
 }
