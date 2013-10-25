@@ -14,7 +14,7 @@ import java.util.Locale;
 
 import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.rt.client.ui.form.IForm;
-import org.eclipse.scout.rt.spec.client.gen.AbstractFormSpecGen;
+import org.eclipse.scout.rt.spec.client.AbstractFormSpecGen;
 import org.eclipse.scout.rt.spec.example.ui.swing.form.TestPersonForm;
 import org.eclipse.scout.testing.client.runner.ScoutClientGUITestRunner;
 import org.junit.Test;

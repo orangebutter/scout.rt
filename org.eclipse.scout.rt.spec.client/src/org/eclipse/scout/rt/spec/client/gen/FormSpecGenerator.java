@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.scout.commons.CollectionUtility;
-import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
-import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
 import org.eclipse.scout.rt.spec.client.out.FormDescriptor;
 import org.eclipse.scout.rt.spec.client.out.TableDescriptor;
 import org.eclipse.scout.rt.spec.client.out.TableFieldDescriptor;
@@ -38,7 +36,7 @@ public class FormSpecGenerator {
   public FormDescriptor getSpecData(IForm form) {
     TableDescriptor formSpec = getFormSpec(form, m_template.getFormProperties());
     TableDescriptor fieldSpec = getFieldSpec(form, m_template.getFieldProperties());
-    List<TableFieldDescriptor> tableFields = getTableFields(form, m_template.getColumnProperties(), m_template.getTableTitleProperty());
+    List<TableFieldDescriptor> tableFields = getTableFields(form);
     String title = m_template.getFormTitleProperty().getText(form);
     String id = m_template.getFormIdProperty().getText(form);
     return new FormDescriptor(id, title, formSpec, fieldSpec, tableFields);
@@ -56,8 +54,8 @@ public class FormSpecGenerator {
     return new TableDescriptor(rowArray, headers);
   }
 
-  private List<TableFieldDescriptor> getTableFields(IForm form, List<IDocProperty<IColumn>> columnProperties, IDocProperty<ITableField<?>> tableTitleProperty) {
-    TableSpecsVisitor visitor = new TableSpecsVisitor(columnProperties, tableTitleProperty);
+  private List<TableFieldDescriptor> getTableFields(IForm form) {
+    TableSpecsVisitor visitor = new TableSpecsVisitor(m_template.getColumnProperties(), m_template.getMenuProperties(), m_template.getTableTitleProperty());
     form.visitFields(visitor);
     return visitor.getTableFieldDescriptors();
   }

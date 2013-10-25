@@ -17,11 +17,13 @@ public class TableFieldDescriptor {
   private final String m_id;
   private final String m_title;
   private final TableDescriptor m_columnProperties;
+  private final TableDescriptor m_menuProperties;
 
-  public TableFieldDescriptor(String id, String title, TableDescriptor columnProperties) {
+  public TableFieldDescriptor(String id, String title, TableDescriptor columnProperties, TableDescriptor menuProperties) {
     m_id = id;
     m_title = title;
     m_columnProperties = columnProperties;
+    m_menuProperties = menuProperties;
   }
 
   public String getId() {
@@ -34,6 +36,10 @@ public class TableFieldDescriptor {
 
   public TableDescriptor getColumnProperties() {
     return m_columnProperties;
+  }
+
+  public TableDescriptor getMenuProperties() {
+    return m_menuProperties;
   }
 
 }

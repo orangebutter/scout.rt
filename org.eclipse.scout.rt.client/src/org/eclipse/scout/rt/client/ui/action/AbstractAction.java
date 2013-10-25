@@ -168,6 +168,11 @@ public abstract class AbstractAction extends AbstractPropertyObserver implements
     return null;
   }
 
+  @Override
+  public String getDoc() {
+    return getConfiguredDoc();
+  }
+
   /**
    * called by constructor<br>
    * this way a menu can for example add/remove custom child menus

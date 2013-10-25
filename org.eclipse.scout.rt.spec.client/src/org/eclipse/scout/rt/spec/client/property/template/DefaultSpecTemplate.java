@@ -13,6 +13,8 @@ package org.eclipse.scout.rt.spec.client.property.template;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.scout.rt.client.ui.action.IAction;
+import org.eclipse.scout.rt.client.ui.action.menu.IMenu;
 import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
@@ -23,6 +25,7 @@ import org.eclipse.scout.rt.spec.client.property.DocProperty;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 import org.eclipse.scout.rt.spec.client.property.SimpleTypeProperty;
 import org.eclipse.scout.rt.spec.client.property.TypeProperty;
+import org.eclipse.scout.rt.spec.client.property.action.TextActionProperty;
 import org.eclipse.scout.rt.spec.client.property.column.LabelColumnProperty;
 import org.eclipse.scout.rt.spec.client.property.form.TitleFormProperty;
 import org.eclipse.scout.rt.spec.client.property.form.field.BooleanFormFieldProperty;
@@ -30,9 +33,18 @@ import org.eclipse.scout.rt.spec.client.property.form.field.TableFieldTypeAndLab
 import org.eclipse.scout.rt.spec.client.property.form.field.TextFormFieldProperty;
 
 /**
- *
+ * A default template that should be possible to use for most projects.
  */
-public class SimpleSpecTemplate implements ISpecTemplate {
+public class DefaultSpecTemplate implements ISpecTemplate {
+
+  @Override
+  public List<IDocProperty<IForm>> getFormProperties() {
+    List<IDocProperty<IForm>> propertyTemplate = new ArrayList<IDocProperty<IForm>>();
+    propertyTemplate.add(new TitleFormProperty());
+    propertyTemplate.add(new DocProperty<IForm>());
+    propertyTemplate.add(new TypeProperty<IForm>());
+    return propertyTemplate;
+  }
 
   @Override
   public List<IDocProperty<IFormField>> getFieldProperties() {
@@ -48,24 +60,6 @@ public class SimpleSpecTemplate implements ISpecTemplate {
   }
 
   @Override
-  public List<IDocProperty<IForm>> getFormProperties() {
-    List<IDocProperty<IForm>> propertyTemplate = new ArrayList<IDocProperty<IForm>>();
-    propertyTemplate.add(new TitleFormProperty());
-    propertyTemplate.add(new DocProperty<IForm>());
-    return propertyTemplate;
-  }
-
-  @Override
-  public IDocProperty<IForm> getFormTitleProperty() {
-    return new TitleFormProperty();
-  }
-
-  @Override
-  public IDocProperty<IForm> getFormIdProperty() {
-    return new TypeProperty<IForm>();
-  }
-
-  @Override
   public List<IDocProperty<IColumn>> getColumnProperties() {
     List<IDocProperty<IColumn>> propertyTemplate = new ArrayList<IDocProperty<IColumn>>();
     propertyTemplate.add(new LabelColumnProperty());
@@ -75,7 +69,27 @@ public class SimpleSpecTemplate implements ISpecTemplate {
   }
 
   @Override
+  public List<IDocProperty<IMenu>> getMenuProperties() {
+    List<IDocProperty<IMenu>> propertyTemplate = new ArrayList<IDocProperty<IMenu>>();
+    propertyTemplate.add(new TextActionProperty<IMenu>(IAction.PROP_TEXT, TEXTS.get("org.eclipse.scout.rt.spec.label")));
+    propertyTemplate.add(new SimpleTypeProperty<IMenu>());
+    propertyTemplate.add(new DocProperty<IMenu>());
+    return propertyTemplate;
+  }
+
+  @Override
+  public IDocProperty<IForm> getFormTitleProperty() {
+    return new TitleFormProperty();
+  }
+
+  @Override
   public IDocProperty<ITableField<?>> getTableTitleProperty() {
     return new TableFieldTypeAndLabelProperty();
   }
+
+  @Override
+  public IDocProperty<IForm> getFormIdProperty() {
+    return new TypeProperty<IForm>();
+  }
+
 }

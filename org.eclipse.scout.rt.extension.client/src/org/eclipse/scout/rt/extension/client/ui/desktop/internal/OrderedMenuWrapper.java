@@ -320,4 +320,9 @@ public class OrderedMenuWrapper implements IMenu, IOrdered, IWrappedObject<IMenu
   public boolean isThisAndParentsVisible() {
     return m_menu.isThisAndParentsVisible();
   }
+
+  @Override
+  public String getDoc() {
+    return m_menu.getDoc();
+  }
 }

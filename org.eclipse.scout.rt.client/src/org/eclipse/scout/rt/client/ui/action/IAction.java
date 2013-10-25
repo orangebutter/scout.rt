@@ -14,6 +14,7 @@ import java.security.Permission;
 
 import org.eclipse.scout.commons.beans.IPropertyObserver;
 import org.eclipse.scout.commons.exception.ProcessingException;
+import org.eclipse.scout.rt.client.ui.IDocumentable;
 
 /**
  * Actions have a trigger scope that is a combination of the "locations" {@link #isSingleSelectionAction()},
@@ -24,7 +25,7 @@ import org.eclipse.scout.commons.exception.ProcessingException;
  * A typical NEW menu on a table that is only visible on the empty space of the table and only when the table field is
  * enabled would have emptySpaceAction=false;
  */
-public interface IAction extends IPropertyObserver {
+public interface IAction extends IPropertyObserver, IDocumentable {
 
   String PROP_ICON_ID = "iconId";
   String PROP_TEXT = "text";

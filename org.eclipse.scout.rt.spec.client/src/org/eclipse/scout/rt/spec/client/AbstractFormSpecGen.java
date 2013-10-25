@@ -32,7 +32,7 @@ import org.eclipse.scout.rt.spec.client.converter.TemplateUtility;
 import org.eclipse.scout.rt.spec.client.gen.FormSpecGenerator;
 import org.eclipse.scout.rt.spec.client.gen.SpecImageFilter;
 import org.eclipse.scout.rt.spec.client.out.FormDescriptor;
-import org.eclipse.scout.rt.spec.client.property.template.SimpleSpecTemplate;
+import org.eclipse.scout.rt.spec.client.property.template.DefaultSpecTemplate;
 import org.eclipse.scout.rt.spec.client.screenshot.PrintFormListener;
 import org.eclipse.scout.rt.spec.client.writer.WikimediaFormWriter;
 import org.osgi.framework.Bundle;
@@ -55,7 +55,7 @@ public abstract class AbstractFormSpecGen {
     IForm form = createAndStartForm();
 
     //template
-    SimpleSpecTemplate template = new SimpleSpecTemplate();
+    DefaultSpecTemplate template = new DefaultSpecTemplate();
 
     // get the data
     String formId = form.getClass().getName();
