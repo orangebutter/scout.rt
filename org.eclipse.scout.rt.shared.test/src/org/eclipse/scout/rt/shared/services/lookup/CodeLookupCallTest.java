@@ -12,12 +12,14 @@ package org.eclipse.scout.rt.shared.services.lookup;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.scout.commons.CompareUtility;
 import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.rt.shared.Activator;
 import org.eclipse.scout.rt.shared.data.basic.FontSpec;
+import org.eclipse.scout.rt.shared.services.common.code.AbstractCode;
 import org.eclipse.scout.rt.shared.services.common.code.AbstractCodeType;
 import org.eclipse.scout.rt.shared.services.common.code.CodeRow;
 import org.eclipse.scout.rt.shared.services.common.code.ICode;
@@ -215,9 +217,9 @@ public class CodeLookupCallTest {
     private static final long serialVersionUID = 1L;
   }
 
-  private static class CodeLookupCallTestCodeType extends AbstractCodeType<String> {
+  private static class CodeLookupCallTestCodeType extends AbstractCodeType<Integer, AbstractCode<Integer>, CodeRow<Integer>> {
     private static final long serialVersionUID = 1L;
-    public static final String ID = "CodeLookupCallTestCodeId";
+    public static final Long ID = Long.valueOf(22);
 
     public static final String ICON = "configuredIcon";
     public static final String TOOLTIP = "configuredTooltip";
@@ -230,26 +232,25 @@ public class CodeLookupCallTest {
     public static final double VALUE = 42d;
 
     @Override
-    public String getId() {
+    public Long getId() {
       return ID;
     }
 
     @Override
-    protected CodeRow[] execLoadCodes() throws ProcessingException {
-      CodeRow[] result = new CodeRow[]{
-          createTestCodeRow(ROW10_KEY, null, ROW10_TEXT),
-          createTestCodeRow(ROW11_KEY, ROW10_KEY, ROW11_TEXT),
-          createTestCodeRow(ROW12_KEY, ROW10_KEY, ROW12_TEXT),
-          createTestCodeRow(ROW20_KEY, null, ROW20_TEXT),
-          createTestCodeRow(ROW30_KEY, null, ROW30_TEXT),
-          createTestCodeRow(ROW31_KEY, ROW30_KEY, ROW31_TEXT)
-      };
+    protected List<CodeRow<Integer>> execLoadCodes(Class<? extends CodeRow<Integer>> codeRowType) throws ProcessingException {
+      List<CodeRow<Integer>> result = new ArrayList<CodeRow<Integer>>();
+      result.add(createTestCodeRow(ROW10_KEY, null, ROW10_TEXT));
+      result.add(createTestCodeRow(ROW11_KEY, ROW10_KEY, ROW11_TEXT));
+      result.add(createTestCodeRow(ROW12_KEY, ROW10_KEY, ROW12_TEXT));
+      result.add(createTestCodeRow(ROW20_KEY, null, ROW20_TEXT));
+      result.add(createTestCodeRow(ROW30_KEY, null, ROW30_TEXT));
+      result.add(createTestCodeRow(ROW31_KEY, ROW30_KEY, ROW31_TEXT));
       return result;
     }
   }
 
-  private static CodeRow createTestCodeRow(Integer key, Integer parentKey, String text) {
-    return new CodeRow(key,
+  private static CodeRow<Integer> createTestCodeRow(Integer key, Integer parentKey, String text) {
+    return new CodeRow<Integer>(key,
         text,
         CodeLookupCallTestCodeType.ICON,
         CodeLookupCallTestCodeType.TOOLTIP,

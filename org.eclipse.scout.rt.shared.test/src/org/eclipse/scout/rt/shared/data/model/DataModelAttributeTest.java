@@ -32,6 +32,8 @@ import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.rt.shared.Activator;
 import org.eclipse.scout.rt.shared.services.common.code.AbstractCode;
 import org.eclipse.scout.rt.shared.services.common.code.AbstractCodeType;
+import org.eclipse.scout.rt.shared.services.common.code.CodeRow;
+import org.eclipse.scout.rt.shared.services.common.code.MutableCode;
 import org.eclipse.scout.rt.shared.services.lookup.DefaultCodeLookupCallFactoryService;
 import org.eclipse.scout.rt.shared.services.lookup.LocalLookupCall;
 import org.eclipse.scout.rt.shared.services.lookup.LookupRow;
@@ -431,12 +433,17 @@ public class DataModelAttributeTest {
     }
   }
 
-  public static class AttributeTestCodeType extends AbstractCodeType<Long> {
+  public static class AttributeTestCodeType extends AbstractCodeType<Long, AbstractCode<Long>, CodeRow<Long>> {
     private static final long serialVersionUID = 1L;
 
     @Override
     public Long getId() {
       return 42L;
+    }
+
+    @Override
+    protected AbstractCode<Long> execCreateCode(CodeRow<Long> newRow) throws ProcessingException {
+      return new MutableCode<Long>(newRow);
     }
 
     @Order(10)

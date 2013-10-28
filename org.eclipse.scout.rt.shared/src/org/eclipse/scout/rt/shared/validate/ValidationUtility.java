@@ -170,7 +170,8 @@ public final class ValidationUtility {
     }
   }
 
-  public static void checkCodeTypeValue(Object codeKey, ICodeType<?> codeType) throws ProcessingException {
+  @SuppressWarnings("unchecked")
+  public static void checkCodeTypeValue(Object codeKey, ICodeType codeType) throws ProcessingException {
     if (codeKey == null || codeType == null) {
       return;
     }
@@ -179,7 +180,8 @@ public final class ValidationUtility {
     }
   }
 
-  public static void checkCodeTypeArray(Object codeKeyArray, ICodeType<?> codeType) throws ProcessingException {
+  @SuppressWarnings("unchecked")
+  public static void checkCodeTypeArray(Object codeKeyArray, ICodeType codeType) throws ProcessingException {
     if (codeKeyArray == null || codeType == null) {
       return;
     }

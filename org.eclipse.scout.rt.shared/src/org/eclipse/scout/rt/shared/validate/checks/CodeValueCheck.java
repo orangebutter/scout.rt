@@ -20,9 +20,9 @@ import org.eclipse.scout.rt.shared.validate.annotations.CodeValue;
 public class CodeValueCheck implements IValidateCheck {
   public static final String ID = "codeValue";
 
-  private ICodeType<?> m_codeType;
+  private ICodeType<?, ?> m_codeType;
 
-  public CodeValueCheck(ICodeType<?> codeType) {
+  public CodeValueCheck(ICodeType<?, ?> codeType) {
     m_codeType = codeType;
   }
 

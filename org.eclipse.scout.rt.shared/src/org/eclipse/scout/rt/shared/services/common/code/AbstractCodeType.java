@@ -12,6 +12,9 @@ package org.eclipse.scout.rt.shared.services.common.code;
 
 import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +25,7 @@ import java.util.Map;
 import org.eclipse.scout.commons.CompareUtility;
 import org.eclipse.scout.commons.ConfigurationUtility;
 import org.eclipse.scout.commons.MatrixUtility;
+import org.eclipse.scout.commons.TypeCastUtility;
 import org.eclipse.scout.commons.annotations.ConfigOperation;
 import org.eclipse.scout.commons.annotations.ConfigProperty;
 import org.eclipse.scout.commons.annotations.Order;
@@ -33,7 +37,7 @@ import org.eclipse.scout.rt.shared.ScoutTexts;
 import org.eclipse.scout.rt.shared.services.common.exceptionhandler.IExceptionHandlerService;
 import org.eclipse.scout.service.SERVICES;
 
-public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable {
+public abstract class AbstractCodeType<CODE_ID_TYPE, CODE extends ICode<CODE_ID_TYPE>, CODE_ROW extends CodeRow> implements ICodeType<CODE_ID_TYPE, CODE>, Serializable {
   private static final IScoutLogger LOG = ScoutLogManager.getLogger(AbstractCodeType.class);
   private static final long serialVersionUID = 1L;
 
@@ -42,8 +46,8 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   private String m_iconId;
   private boolean m_hierarchy;
   private int m_maxLevel;
-  private transient HashMap<Object, ICode> m_rootCodeMap = new HashMap<Object, ICode>();
-  private ArrayList<ICode> m_rootCodeList = new ArrayList<ICode>();
+  private transient HashMap<CODE_ID_TYPE, CODE> m_rootCodeMap = new HashMap<CODE_ID_TYPE, CODE>();
+  private ArrayList<CODE> m_rootCodeList = new ArrayList<CODE>();
 
   public AbstractCodeType() {
     this(true);
@@ -67,10 +71,11 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
     m_hierarchy = hierarchy;
   }
 
-  private Class<? extends ICode>[] getConfiguredCodes() {
+  private Class<CODE>[] getConfiguredCodes() {
     Class[] dca = ConfigurationUtility.getDeclaredPublicClasses(getClass());
     Class[] filtered = ConfigurationUtility.filterClasses(dca, ICode.class);
-    return ConfigurationUtility.sortFilteredClassesByOrderAnnotation(filtered, ICode.class);
+    Class<CODE> codeClazz = TypeCastUtility.getGenericsParameterClass(this.getClass(), AbstractCodeType.class, 1);
+    return ConfigurationUtility.sortFilteredClassesByOrderAnnotation(filtered, codeClazz);
   }
 
   @ConfigProperty(ConfigProperty.BOOLEAN)
@@ -103,20 +108,26 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
     return null;
   }
 
+  @ConfigProperty(ConfigProperty.CODE_ROW)
+  @Order(120)
+  protected Class<CODE_ROW> getConfiguredCodeRowType() {
+    return (Class<CODE_ROW>) CodeRow.class;
+  }
+
   /**
    * This method is called on server side to create basic code set
    */
   @ConfigOperation
   @Order(1)
-  protected List<ICode<?>> execCreateCodes() throws ProcessingException {
-    Class<? extends ICode>[] a = getConfiguredCodes();
+  protected List<CODE> execCreateCodes() throws ProcessingException {
+    Class<CODE>[] a = getConfiguredCodes();
     if (a == null || a.length == 0) {
       return Collections.emptyList();
     }
-    ArrayList<ICode<?>> list = new ArrayList<ICode<?>>(a.length);
+    ArrayList<CODE> list = new ArrayList<CODE>(a.length);
     for (int i = 0; i < a.length; i++) {
       try {
-        ICode code = ConfigurationUtility.newInnerInstance(this, a[i]);
+        CODE code = ConfigurationUtility.newInnerInstance(this, a[i]);
         list.add(code);
       }
       catch (Exception e) {
@@ -134,9 +145,25 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
    */
   @ConfigOperation
   @Order(2)
-  protected ICode<?> execCreateCode(CodeRow newRow) throws ProcessingException {
-    ICode<?> code = new MutableCode(newRow);
-    return code;
+  protected CODE execCreateCode(CODE_ROW newRow) throws ProcessingException {
+    Class<CODE> codeClazz = TypeCastUtility.getGenericsParameterClass(this.getClass(), AbstractCodeType.class, 1);
+    if (!Modifier.isAbstract(codeClazz.getModifiers()) && !Modifier.isInterface(codeClazz.getModifiers())) {
+      Class<CODE_ROW> codeRowClazz = TypeCastUtility.getGenericsParameterClass(this.getClass(), AbstractCodeType.class, 2);
+      try {
+        Constructor<CODE> ctor = codeClazz.getConstructor(codeRowClazz);
+        return ctor.newInstance(newRow);
+      }
+      catch (Exception e) {
+        LOG.warn("Could not create a new instance of code row! Override the execCreateCode mehtod.", e);
+      }
+    }
+    else {
+      // try to create mutable code
+      if (codeClazz.isAssignableFrom(MutableCode.class)) {
+        return (CODE) new MutableCode<CODE_ID_TYPE>(newRow);
+      }
+    }
+    return null;
   }
 
   /**
@@ -154,7 +181,7 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
    */
   @ConfigOperation
   @Order(10)
-  protected CodeRow[] execLoadCodes() throws ProcessingException {
+  protected List<CODE_ROW> execLoadCodes(Class<? extends CODE_ROW> codeRowType) throws ProcessingException {
     return null;
   }
 
@@ -181,7 +208,7 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
    */
   @ConfigOperation
   @Order(20)
-  protected void execOverwriteCode(CodeRow oldCode, CodeRow newCode) throws ProcessingException {
+  protected void execOverwriteCode(CODE_ROW oldCode, CODE_ROW newCode) throws ProcessingException {
     if (newCode.getBackgroundColor() == null) {
       newCode.setBackgroundColor(oldCode.getBackgroundColor());
     }
@@ -277,7 +304,7 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
    * </pre>
    */
   @Override
-  public abstract T getId();
+  public abstract Long getId();
 
   @Override
   public String getText() {
@@ -300,12 +327,12 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   @Override
-  public ICode getCode(Object id) {
-    ICode c = m_rootCodeMap.get(id);
+  public CODE getCode(Object id) {
+    CODE c = m_rootCodeMap.get(id);
     if (c == null) {
-      for (Iterator<ICode> it = m_rootCodeList.iterator(); it.hasNext();) {
-        ICode childCode = it.next();
-        c = childCode.getChildCode(id);
+      for (Iterator<CODE> it = m_rootCodeList.iterator(); it.hasNext();) {
+        CODE childCode = it.next();
+        c = (CODE) childCode.getChildCode(id);
         if (c != null) {
           return c;
         }
@@ -315,15 +342,15 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   @Override
-  public ICode getCodeByExtKey(Object extKey) {
-    ICode c = null;
-    for (Iterator<ICode> it = m_rootCodeList.iterator(); it.hasNext();) {
-      ICode childCode = it.next();
+  public CODE getCodeByExtKey(Object extKey) {
+    CODE c = null;
+    for (Iterator<CODE> it = m_rootCodeList.iterator(); it.hasNext();) {
+      CODE childCode = it.next();
       if (extKey.equals(childCode.getExtKey())) {
         c = childCode;
       }
       else {
-        c = childCode.getChildCodeByExtKey(extKey);
+        c = (CODE) childCode.getChildCodeByExtKey(extKey);
       }
       if (c != null) {
         return c;
@@ -333,13 +360,13 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   @Override
-  public int getCodeIndex(final Object id) {
+  public int getCodeIndex(final CODE_ID_TYPE id) {
     final IntegerHolder result = new IntegerHolder(-1);
-    ICodeVisitor v = new ICodeVisitor() {
+    ICodeVisitor<CODE_ID_TYPE, CODE> v = new ICodeVisitor<CODE_ID_TYPE, CODE>() {
       private int index = 0;
 
       @Override
-      public boolean visit(ICode code, int treeLevel) {
+      public boolean visit(CODE code, int treeLevel) {
         if (CompareUtility.equals(code.getId(), id)) {
           result.setValue(index);
         }
@@ -354,13 +381,13 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   @Override
-  public int getCodeIndex(final ICode c) {
+  public int getCodeIndex(final CODE c) {
     final IntegerHolder result = new IntegerHolder(-1);
-    ICodeVisitor v = new ICodeVisitor() {
+    ICodeVisitor<CODE_ID_TYPE, CODE> v = new ICodeVisitor<CODE_ID_TYPE, CODE>() {
       private int index = 0;
 
       @Override
-      public boolean visit(ICode code, int treeLevel) {
+      public boolean visit(CODE code, int treeLevel) {
         if (code == c) {
           result.setValue(index);
         }
@@ -375,54 +402,54 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   @Override
-  public ICode[] getCodes() {
+  public CODE[] getCodes() {
     return getCodes(true);
   }
 
   @Override
-  public ICode[] getCodes(boolean activeOnly) {
-    ArrayList<ICode> list = new ArrayList<ICode>(m_rootCodeList);
+  public CODE[] getCodes(boolean activeOnly) {
+    ArrayList<CODE> list = new ArrayList<CODE>(m_rootCodeList);
     if (activeOnly) {
-      for (Iterator<ICode> it = list.iterator(); it.hasNext();) {
-        ICode code = it.next();
+      for (Iterator<CODE> it = list.iterator(); it.hasNext();) {
+        CODE code = it.next();
         if (!code.isActive()) {
           it.remove();
         }
       }
     }
-    return list.toArray(new ICode[0]);
+    Class<CODE> codeClazz = TypeCastUtility.getGenericsParameterClass(this.getClass(), AbstractCodeType.class, 1);
+    return list.toArray((CODE[]) Array.newInstance(codeClazz, list.size()));
   }
 
   private void loadCodes() throws ProcessingException {
-    m_rootCodeMap = new HashMap<Object, ICode>();
-    m_rootCodeList = new ArrayList<ICode>();
+    m_rootCodeMap = new HashMap<CODE_ID_TYPE, CODE>();
+    m_rootCodeList = new ArrayList<CODE>();
     //
     // 1a create unconnected codes and assign to type
-    ArrayList<ICode> allCodesOrdered = new ArrayList<ICode>();
-    HashMap<ICode, ICode> codeToParentCodeMap = new HashMap<ICode, ICode>();
-    HashMap<Object, ICode> idToCodeMap = new HashMap<Object, ICode>();
+    ArrayList<CODE> allCodesOrdered = new ArrayList<CODE>();
+    HashMap<CODE, CODE> codeToParentCodeMap = new HashMap<CODE, CODE>();
+    HashMap<CODE_ID_TYPE, CODE> idToCodeMap = new HashMap<CODE_ID_TYPE, CODE>();
     // 1a add configured codes
-    List<ICode<?>> createdList = execCreateCodes();
+    List<CODE> createdList = execCreateCodes();
     if (createdList != null) {
-      for (ICode code : createdList) {
+      for (CODE code : createdList) {
         allCodesOrdered.add(code);
         idToCodeMap.put(code.getId(), code);
         codeToParentCodeMap.put(code, null);
       }
     }
     // 1b add dynamic codes
-    CodeRow[] result = execLoadCodes();
-    if (result != null && result.length > 0) {
-      HashMap<ICode, Object> codeToParentIdMap = new HashMap<ICode, Object>();
+    List<CODE_ROW> result = execLoadCodes(getConfiguredCodeRowType());
+    if (result != null && result.size() > 0) {
+      HashMap<CODE, CODE_ID_TYPE> codeToParentIdMap = new HashMap<CODE, CODE_ID_TYPE>();
       // create unconnected codes and assign to type
-      for (int i = 0; i < result.length; i++) {
-        CodeRow newRow = result[i];
-        ICode existingCode = idToCodeMap.get(newRow.getKey());
+      for (CODE_ROW newRow : result) {
+        CODE existingCode = idToCodeMap.get(newRow.getKey());
         if (existingCode != null) {
           // There is already a static code with same id.
-          execOverwriteCode(existingCode.toCodeRow(), newRow);
+          execOverwriteCode((CODE_ROW) existingCode.toCodeRow(), newRow);
         }
-        ICode newCode = execCreateCode(newRow);
+        CODE newCode = execCreateCode(newRow);
         if (newCode != null) {
           if (existingCode != null) {
             // remove old (and then re-add) to preserve dynamic ordering.
@@ -433,7 +460,7 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
           //add new
           allCodesOrdered.add(newCode);
           idToCodeMap.put(newCode.getId(), newCode);
-          Object parentId = newRow.getParentKey();
+          CODE_ID_TYPE parentId = (CODE_ID_TYPE) newRow.getParentKey();
           codeToParentIdMap.put(newCode, parentId);
         }
         else if (existingCode != null) {
@@ -442,13 +469,13 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
           allCodesOrdered.add(existingCode);
         }
       }
-      for (Iterator<Map.Entry<ICode, Object>> it = codeToParentIdMap.entrySet().iterator(); it.hasNext();) {
-        Map.Entry<ICode, Object> e = it.next();
-        AbstractCode code = (AbstractCode) e.getKey();
-        Object parentId = e.getValue();
-        AbstractCode parentCode = null;
+      for (Iterator<Map.Entry<CODE, CODE_ID_TYPE>> it = codeToParentIdMap.entrySet().iterator(); it.hasNext();) {
+        Map.Entry<CODE, CODE_ID_TYPE> e = it.next();
+        CODE code = e.getKey();
+        CODE_ID_TYPE parentId = e.getValue();
+        CODE parentCode = null;
         if (parentId != null) {
-          parentCode = (AbstractCode) idToCodeMap.get(parentId);
+          parentCode = idToCodeMap.get(parentId);
           if (parentCode == null) {
             LOG.warn("parent code for " + code + " not found: id=" + parentId);
           }
@@ -457,8 +484,8 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
       }
     }
     // 2 interconnect codes and types to structure
-    for (ICode code : allCodesOrdered) {
-      ICode parentCode = codeToParentCodeMap.get(code);
+    for (CODE code : allCodesOrdered) {
+      CODE parentCode = codeToParentCodeMap.get(code);
       if (parentCode != null) {
         parentCode.addChildCodeInternal(code);
       }
@@ -467,9 +494,9 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
       }
     }
     //3 mark all chidren of inactive codes also as inactive
-    visit(new ICodeVisitor() {
+    visit(new ICodeVisitor<CODE_ID_TYPE, CODE>() {
       @Override
-      public boolean visit(ICode code, int treeLevel) {
+      public boolean visit(CODE code, int treeLevel) {
         if (code.getParentCode() != null) {
           if (!code.getParentCode().isActive() && code.isActive()) {
             if (code instanceof AbstractCode<?>) {
@@ -482,7 +509,7 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
     }, false);
   }
 
-  private void addChildCodeInternal(ICode code) {
+  private void addChildCodeInternal(CODE code) {
     code.setCodeTypeInternal(this);
     code.setParentCodeInternal(null);
     m_rootCodeMap.put(code.getId(), code);
@@ -495,15 +522,15 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   @Override
-  public boolean visit(ICodeVisitor visitor) {
+  public boolean visit(ICodeVisitor<CODE_ID_TYPE, CODE> visitor) {
     return visit(visitor, true);
   }
 
   @Override
-  public boolean visit(ICodeVisitor visitor, boolean activeOnly) {
-    ICode[] a = getCodes(activeOnly);
+  public boolean visit(ICodeVisitor<CODE_ID_TYPE, CODE> visitor, boolean activeOnly) {
+    CODE[] a = getCodes(activeOnly);
     for (int i = 0; i < a.length; i++) {
-      ICode code = a[i];
+      CODE code = a[i];
       if (!visitor.visit(code, 0)) {
         return false;
       }
@@ -515,12 +542,12 @@ public abstract class AbstractCodeType<T> implements ICodeType<T>, Serializable 
   }
 
   protected Object readResolve() throws ObjectStreamException {
-    m_rootCodeMap = new HashMap<Object, ICode>();
+    m_rootCodeMap = new HashMap<CODE_ID_TYPE, CODE>();
     if (m_rootCodeList == null) {
-      m_rootCodeList = new ArrayList<ICode>();
+      m_rootCodeList = new ArrayList<CODE>();
     }
     else {
-      for (ICode<?> code : m_rootCodeList) {
+      for (CODE code : m_rootCodeList) {
         m_rootCodeMap.put(code.getId(), code);
         code.setParentCodeInternal(null);
         code.setCodeTypeInternal(this);

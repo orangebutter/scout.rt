@@ -179,7 +179,7 @@ public abstract class AbstractSmartField<T> extends AbstractValueField<T> implem
   @ConfigProperty(ConfigProperty.CODE_TYPE)
   @Order(260)
   @ValidationRule(ValidationRule.CODE_TYPE)
-  protected Class<? extends ICodeType<?>> getConfiguredCodeType() {
+  protected Class<? extends ICodeType<?, ?>> getConfiguredCodeType() {
     return null;
   }
 

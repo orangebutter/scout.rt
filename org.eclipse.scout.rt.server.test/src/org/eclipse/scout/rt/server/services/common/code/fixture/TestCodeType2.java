@@ -10,15 +10,17 @@
  ******************************************************************************/
 package org.eclipse.scout.rt.server.services.common.code.fixture;
 
+import org.eclipse.scout.rt.shared.services.common.code.AbstractCode;
 import org.eclipse.scout.rt.shared.services.common.code.AbstractCodeType;
+import org.eclipse.scout.rt.shared.services.common.code.CodeRow;
 
-public class TestCodeType2 extends AbstractCodeType<String> {
+public class TestCodeType2 extends AbstractCodeType<String, AbstractCode<String>, CodeRow<String>> {
   private static final long serialVersionUID = 1L;
 
-  public static final String ID = "TestCodeType2";
+  public static final Long ID = Long.valueOf(29);
 
   @Override
-  public String getId() {
+  public Long getId() {
     return ID;
   }
 }

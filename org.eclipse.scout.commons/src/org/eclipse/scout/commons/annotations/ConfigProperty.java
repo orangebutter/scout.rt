@@ -74,6 +74,11 @@ public @interface ConfigProperty {
    * Class&lt;? extends ICodeType&gt;
    */
   String CODE_TYPE = "CODE_TYPE";
+
+  /**
+   * Class&lt;? extends ICodeType&gt;
+   */
+  String CODE_ROW = "CodeRow";
   /**
    * int
    */
@@ -200,4 +205,5 @@ public @interface ConfigProperty {
    * Border decoration enumeration according to the BORDER_DECORATION_* constants
    */
   String BORDER_DECORATION = "BORDER_DECORATION";
+
 }

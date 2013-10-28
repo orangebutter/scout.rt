@@ -49,18 +49,18 @@ public class TestingCodeService extends AbstractService implements ICodeService 
 
   private final static IScoutLogger LOG = ScoutLogManager.getLogger(TestingCodeService.class);
 
-  private final Map<Class<? extends ICodeType>, ICodeType<?>> m_codeTypes;
+  private final Map<Class<? extends ICodeType>, ICodeType<?, ?>> m_codeTypes;
   private final Object m_codeTypeMapLock;
 
-  public TestingCodeService(ICodeType<?>... codeTypes) {
-    m_codeTypes = new HashMap<Class<? extends ICodeType>, ICodeType<?>>();
+  public TestingCodeService(ICodeType<?, ?>... codeTypes) {
+    m_codeTypes = new HashMap<Class<? extends ICodeType>, ICodeType<?, ?>>();
     m_codeTypeMapLock = new Object();
     addCodeTypes(codeTypes);
   }
 
-  public void addCodeTypes(ICodeType<?>... codeTypes) {
+  public void addCodeTypes(ICodeType<?, ?>... codeTypes) {
     synchronized (m_codeTypeMapLock) {
-      for (ICodeType<?> ct : codeTypes) {
+      for (ICodeType<?, ?> ct : codeTypes) {
         if (ct != null) {
           m_codeTypes.put(ct.getClass(), ct);
         }
@@ -86,7 +86,7 @@ public class TestingCodeService extends AbstractService implements ICodeService 
   @Override
   public ICodeType findCodeTypeById(Object id) {
     synchronized (m_codeTypeMapLock) {
-      for (ICodeType<?> ct : m_codeTypes.values()) {
+      for (ICodeType<?, ?> ct : m_codeTypes.values()) {
         if (CompareUtility.equals(ct.getId(), id)) {
           return ct;
         }

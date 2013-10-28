@@ -13,6 +13,9 @@ package org.eclipse.scout.rt.shared.services.common.code;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.scout.commons.annotations.Order;
 import org.eclipse.scout.commons.exception.ProcessingException;
 import org.eclipse.scout.rt.shared.data.basic.FontSpec;
@@ -25,6 +28,7 @@ public class CodeTypeTest {
 
   @Test
   public void testOverwriteCode_overwriteValues() throws Exception {
+
     TestCodeType ct = new TestCodeType();
     ICode c = ct.getCode(TestCodeType.Test1Code.ID);
     assertEquals(TestCodeType.DYNAMIC_TEXT, c.getText());
@@ -59,9 +63,9 @@ public class CodeTypeTest {
     assertEquals(TestCodeType.DYNAMIC_PARTITION_ID, c.getPartitionId());
   }
 
-  private static class TestCodeType extends AbstractCodeType<String> {
+  private static class TestCodeType extends AbstractCodeType<String, AbstractCode<String>, CodeRow<String>> {
     private static final long serialVersionUID = 1L;
-    public static final String ID = "TestCodeId";
+    public static final Long ID = Long.valueOf(2);
 
     public static final String CONFIGURED_TEXT = "configuredText";
     public static final String CONFIGURED_ICON = "configuredIcon";
@@ -88,28 +92,29 @@ public class CodeTypeTest {
     public static final long DYNAMIC_PARTITION_ID = 0L;
 
     @Override
-    public String getId() {
+    public Long getId() {
       return ID;
     }
 
     @Override
-    protected CodeRow[] execLoadCodes() throws ProcessingException {
-      CodeRow[] result = new CodeRow[]{
-          new CodeRow(
-              Test1Code.ID,
-              DYNAMIC_TEXT,
-              null, // icon
-              null, // tooltip
-              null, // background color
-              null, // foreground color
-              null, // font
-              DYNAMIC_ENABLED,
-              DYNAMIC_PARENT_KEY,
-              DYNAMIC_ACTIVE,
-              null, // ext key
-              null, // value
-              DYNAMIC_PARTITION_ID),
-          new CodeRow(
+    protected List<CodeRow<String>> execLoadCodes(Class<? extends CodeRow<String>> codeRowType) throws ProcessingException {
+      List<CodeRow<String>> codeRows = new ArrayList<CodeRow<String>>();
+      codeRows.add(new CodeRow<String>(
+          Test1Code.ID,
+          DYNAMIC_TEXT,
+          null, // icon
+          null, // tooltip
+          null, // background color
+          null, // foreground color
+          null, // font
+          DYNAMIC_ENABLED,
+          DYNAMIC_PARENT_KEY,
+          DYNAMIC_ACTIVE,
+          null, // ext key
+          null, // value
+          DYNAMIC_PARTITION_ID));
+      codeRows.add(
+          new CodeRow<String>(
               Test2Code.ID,
               DYNAMIC_TEXT,
               DYNAMIC_ICON,
@@ -122,8 +127,8 @@ public class CodeTypeTest {
               DYNAMIC_ACTIVE,
               DYNAMIC_EXT_KEY,
               DYNAMIC_VALUE,
-              DYNAMIC_PARTITION_ID)};
-      return result;
+              DYNAMIC_PARTITION_ID));
+      return codeRows;
     }
 
     @Order(10)
