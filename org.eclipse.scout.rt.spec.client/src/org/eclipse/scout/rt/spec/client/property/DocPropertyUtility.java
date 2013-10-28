@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.eclipse.scout.commons.CollectionUtility;
 import org.eclipse.scout.rt.spec.client.out.TableDescriptor;
+import org.eclipse.scout.rt.spec.client.property.template.IDocConfig;
 
 /**
  * Some utility methods for {@link IDocProperty}.
@@ -60,6 +61,18 @@ public final class DocPropertyUtility {
       return row;
     }
     return new String[0];
+  }
+
+  /**
+   * Creates a {@link TableDescriptor} for scout objects according to the configuration.
+   * 
+   * @param scoutObjects
+   * @param config
+   *          {@link IDocConfig}
+   * @return {@link TableDescriptor}
+   */
+  public static <T> TableDescriptor createTableDesc(T[] scoutObjects, IDocConfig<T> config) {
+    return createTableDesc(scoutObjects, config.getProperties(), config.getFilters());
   }
 
   /**

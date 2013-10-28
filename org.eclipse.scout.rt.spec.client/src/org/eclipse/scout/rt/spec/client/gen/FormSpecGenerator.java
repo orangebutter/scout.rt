@@ -21,6 +21,7 @@ import org.eclipse.scout.rt.spec.client.out.TableDescriptor;
 import org.eclipse.scout.rt.spec.client.out.TableFieldDescriptor;
 import org.eclipse.scout.rt.spec.client.property.DocPropertyUtility;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
+import org.eclipse.scout.rt.spec.client.property.template.IDocConfig;
 import org.eclipse.scout.rt.spec.client.property.template.ISpecTemplate;
 
 /**
@@ -35,7 +36,7 @@ public class FormSpecGenerator {
 
   public FormDescriptor getSpecData(IForm form) {
     TableDescriptor formSpec = getFormSpec(form, m_template.getFormProperties());
-    TableDescriptor fieldSpec = getFieldSpec(form, m_template.getFieldProperties());
+    TableDescriptor fieldSpec = getFieldSpec(form, m_template.getFieldConfig());
     List<TableFieldDescriptor> tableFields = getTableFields(form);
     String title = m_template.getFormTitleProperty().getText(form);
     String id = m_template.getFormIdProperty().getText(form);
@@ -55,16 +56,16 @@ public class FormSpecGenerator {
   }
 
   private List<TableFieldDescriptor> getTableFields(IForm form) {
-    TableSpecsVisitor visitor = new TableSpecsVisitor(m_template.getColumnProperties(), m_template.getColumnFilters(), m_template.getMenuProperties(), m_template.getTableTitleProperty());
+    TableSpecsVisitor visitor = new TableSpecsVisitor(m_template.getColumnConfig(), m_template.getMenuConfig(), m_template.getTableTitleProperty());
     form.visitFields(visitor);
     return visitor.getTableFieldDescriptors();
   }
 
-  private TableDescriptor getFieldSpec(IForm form, List<IDocProperty<IFormField>> properties) {
-    FormFieldSpecsVisitor visitor = new FormFieldSpecsVisitor(properties);
+  private TableDescriptor getFieldSpec(IForm form, IDocConfig<IFormField> fieldConfig) {
+    FormFieldSpecsVisitor visitor = new FormFieldSpecsVisitor(fieldConfig);
     form.visitFields(visitor);
     String[][] rows = visitor.getRows();
-    String[] headers = DocPropertyUtility.getHeaders(properties);
+    String[] headers = DocPropertyUtility.getHeaders(fieldConfig.getProperties());
     return new TableDescriptor(rows, headers);
   }
 

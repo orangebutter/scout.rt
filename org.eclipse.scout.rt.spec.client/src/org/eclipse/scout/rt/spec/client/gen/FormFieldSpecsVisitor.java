@@ -17,22 +17,22 @@ import org.eclipse.scout.commons.CollectionUtility;
 import org.eclipse.scout.rt.client.ui.form.IFormFieldVisitor;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.spec.client.property.DocPropertyUtility;
-import org.eclipse.scout.rt.spec.client.property.IDocProperty;
+import org.eclipse.scout.rt.spec.client.property.template.IDocConfig;
 
 /**
  * Collects form field properties
  */
 public class FormFieldSpecsVisitor implements IFormFieldVisitor {
-  private final List<IDocProperty<IFormField>> m_properties;
+  private final IDocConfig<IFormField> m_fieldConfig;
   private final List<String[]> m_rows = new ArrayList<String[]>();
 
-  public FormFieldSpecsVisitor(List<IDocProperty<IFormField>> properties) {
-    m_properties = properties;
+  public FormFieldSpecsVisitor(IDocConfig<IFormField> fieldConfig) {
+    m_fieldConfig = fieldConfig;
   }
 
   @Override
   public boolean visitField(IFormField field, int level, int fieldIndex) {
-    String[] row = DocPropertyUtility.getTexts(field, m_properties);
+    String[] row = DocPropertyUtility.getTexts(field, m_fieldConfig.getProperties());
     m_rows.add(row);
     return true;
   }

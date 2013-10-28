@@ -17,7 +17,6 @@ import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
-import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
@@ -40,32 +39,19 @@ public interface ISpecTemplate {
   public List<IDocProperty<IForm>> getFormProperties();
 
   /**
-   * Configuration for documenting {@link IFormField}.
-   * 
-   * @return a list of properties that should be generated.
+   * Configuration for documenting {@link Field}.
    */
-  public List<IDocProperty<IFormField>> getFieldProperties();
+  public IDocConfig<IFormField> getFieldConfig();
 
   /**
    * Configuration for documenting {@link IColumn}.
-   * 
-   * @return a list of properties that should be generated.
    */
-  public List<IDocProperty<IColumn>> getColumnProperties();
-
-  /**
-   * Configuration for filtering {@link IColumn}. Only the columns accepted by all filters are generated.
-   * 
-   * @return a list of filters.
-   */
-  public List<IDocFilter<IColumn>> getColumnFilters();
+  public IDocConfig<IColumn> getColumnConfig();
 
   /**
    * Configuration for documenting {@link IMenu}.
-   * 
-   * @return a list of properties that should be generated.
    */
-  public List<IDocProperty<IMenu>> getMenuProperties();
+  public IDocConfig<IMenu> getMenuConfig();
 
   /**
    * Configuration for the title of the {@link IForm} description.

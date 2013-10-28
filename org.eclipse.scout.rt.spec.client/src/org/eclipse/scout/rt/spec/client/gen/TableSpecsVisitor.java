@@ -21,24 +21,22 @@ import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
 import org.eclipse.scout.rt.spec.client.out.TableDescriptor;
 import org.eclipse.scout.rt.spec.client.out.TableFieldDescriptor;
 import org.eclipse.scout.rt.spec.client.property.DocPropertyUtility;
-import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
+import org.eclipse.scout.rt.spec.client.property.template.IDocConfig;
 
 /**
  *
  */
 public class TableSpecsVisitor implements IFormFieldVisitor {
-  private final List<IDocProperty<IColumn>> m_columnProperties;
-  private final List<IDocProperty<IMenu>> m_menuProperties;
+  private final IDocConfig<IMenu> m_menuConfig;
+  private final IDocConfig<IColumn> m_columnConfig;
   private final IDocProperty<ITableField<?>> m_titleProperty;
-  private final List<IDocFilter<IColumn>> m_column_filters;
   private final List<TableFieldDescriptor> m_tableFields = new ArrayList<TableFieldDescriptor>();
 
-  public TableSpecsVisitor(List<IDocProperty<IColumn>> columnProperties, List<IDocFilter<IColumn>> column_filters, List<IDocProperty<IMenu>> menuProperties, IDocProperty<ITableField<?>> titleProperty) {
-    m_columnProperties = columnProperties;
+  public TableSpecsVisitor(IDocConfig<IColumn> columnConfig, IDocConfig<IMenu> menuConfig, IDocProperty<ITableField<?>> titleProperty) {
+    m_columnConfig = columnConfig;
     m_titleProperty = titleProperty;
-    m_menuProperties = menuProperties;
-    m_column_filters = column_filters;
+    m_menuConfig = menuConfig;
   }
 
   @Override
@@ -53,8 +51,8 @@ public class TableSpecsVisitor implements IFormFieldVisitor {
   private TableFieldDescriptor createFieldDescriptor(ITableField field) {
     IColumn<?>[] columns = field.getTable().getColumns();
     IMenu[] menus = field.getTable().getMenus();
-    TableDescriptor tableDesc = DocPropertyUtility.createTableDesc(columns, m_columnProperties, m_column_filters);
-    TableDescriptor menuDesc = DocPropertyUtility.createTableDesc(menus, m_menuProperties, null);
+    TableDescriptor tableDesc = DocPropertyUtility.createTableDesc(columns, m_columnConfig);
+    TableDescriptor menuDesc = DocPropertyUtility.createTableDesc(menus, m_menuConfig);
     String title = m_titleProperty.getText(field);
     return new TableFieldDescriptor(field.getClass().getName(), title, tableDesc, menuDesc);
   }

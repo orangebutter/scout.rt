@@ -8,28 +8,30 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property.action;
+package org.eclipse.scout.rt.spec.client.property.template;
 
-import org.eclipse.scout.rt.client.ui.action.IAction;
-import org.eclipse.scout.rt.shared.TEXTS;
-import org.eclipse.scout.rt.spec.client.property.AbstractBooleanDocProperty;
+import java.util.List;
+
+import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
- *
+ * A template for describing the configuration of the generated documentation for a specific type.
  */
-public class MultiselectionActionProperty<T extends IAction> extends AbstractBooleanDocProperty<T> implements IDocProperty<T> {
+public interface IDocConfig<T> {
 
   /**
-   * @param name
+   * Configuration for documenting type <code>T</code>.
+   * 
+   * @return a list of properties that should be generated.
    */
-  public MultiselectionActionProperty() {
-    super(TEXTS.get("org.eclipse.scout.rt.spec.action.multiSelection"));
-  }
+  public List<IDocProperty<T>> getProperties();
 
-  @Override
-  public String getText(T object) {
-    return getBooleanText(object.isMultiSelectionAction());
-  }
+  /**
+   * Configuration for filtering <code>T</code>. Only the objects accepted by all filters are generated.
+   * 
+   * @return a list of filters.
+   */
+  public List<IDocFilter<T>> getFilters();
 
 }
