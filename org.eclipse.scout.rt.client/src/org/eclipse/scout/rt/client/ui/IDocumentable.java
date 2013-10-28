@@ -11,10 +11,13 @@
 package org.eclipse.scout.rt.client.ui;
 
 /**
- *
+ * A scout model object with a documentation text.
  */
 public interface IDocumentable {
 
+  /**
+   * @return the description of the scout model object (may be language specific)
+   */
   public String getDoc();
 
 }

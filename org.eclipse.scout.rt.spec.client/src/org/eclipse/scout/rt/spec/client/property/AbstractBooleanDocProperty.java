@@ -10,24 +10,25 @@
  ******************************************************************************/
 package org.eclipse.scout.rt.spec.client.property;
 
+import org.eclipse.scout.rt.shared.TEXTS;
+
 /**
- * A property of a scout model object of type <code>T</code> that should be documented.
- * <p>
- * E.g. the label of a <code>IFormField</code> should appear in the documentation table with table header "Label" and
- * the label of the respective form field as cell text.
- * </p>
+ *
  */
-public interface IDocProperty<T> {
+public abstract class AbstractBooleanDocProperty<T> extends AbstractNamedDocProperty<T> {
+
+  public static final String DOC_ID_TRUE = "org.eclipse.scout.rt.spec.true";
+  public static final String DOC_ID_FALSE = "org.eclipse.scout.rt.spec.false";
 
   /**
-   * @return header description for a this property
+   * @param name
    */
-  public String getHeader();
+  public AbstractBooleanDocProperty(String name) {
+    super(name);
+  }
 
-  /**
-   * @param object
-   * @return a documentation text for a scout model object
-   */
-  public String getText(T object);
+  protected String getBooleanText(boolean b) {
+    return b ? TEXTS.get(DOC_ID_TRUE) : TEXTS.get(DOC_ID_FALSE);
+  }
 
 }

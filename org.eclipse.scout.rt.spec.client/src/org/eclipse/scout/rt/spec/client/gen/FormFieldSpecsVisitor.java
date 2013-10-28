@@ -32,7 +32,7 @@ public class FormFieldSpecsVisitor implements IFormFieldVisitor {
 
   @Override
   public boolean visitField(IFormField field, int level, int fieldIndex) {
-    String[] row = DocPropertyUtility.getPropertyRow(m_properties, field);
+    String[] row = DocPropertyUtility.getTexts(field, m_properties);
     m_rows.add(row);
     return true;
   }

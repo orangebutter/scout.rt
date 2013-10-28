@@ -13,7 +13,6 @@ package org.eclipse.scout.rt.spec.client.gen;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.scout.commons.CollectionUtility;
 import org.eclipse.scout.rt.client.ui.action.menu.IMenu;
 import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.form.IFormFieldVisitor;
@@ -22,6 +21,7 @@ import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
 import org.eclipse.scout.rt.spec.client.out.TableDescriptor;
 import org.eclipse.scout.rt.spec.client.out.TableFieldDescriptor;
 import org.eclipse.scout.rt.spec.client.property.DocPropertyUtility;
+import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
@@ -31,12 +31,14 @@ public class TableSpecsVisitor implements IFormFieldVisitor {
   private final List<IDocProperty<IColumn>> m_columnProperties;
   private final List<IDocProperty<IMenu>> m_menuProperties;
   private final IDocProperty<ITableField<?>> m_titleProperty;
+  private final List<IDocFilter<IColumn>> m_column_filters;
   private final List<TableFieldDescriptor> m_tableFields = new ArrayList<TableFieldDescriptor>();
 
-  public TableSpecsVisitor(List<IDocProperty<IColumn>> columnProperties, List<IDocProperty<IMenu>> menuProperties, IDocProperty<ITableField<?>> titleProperty) {
+  public TableSpecsVisitor(List<IDocProperty<IColumn>> columnProperties, List<IDocFilter<IColumn>> column_filters, List<IDocProperty<IMenu>> menuProperties, IDocProperty<ITableField<?>> titleProperty) {
     m_columnProperties = columnProperties;
     m_titleProperty = titleProperty;
     m_menuProperties = menuProperties;
+    m_column_filters = column_filters;
   }
 
   @Override
@@ -51,21 +53,10 @@ public class TableSpecsVisitor implements IFormFieldVisitor {
   private TableFieldDescriptor createFieldDescriptor(ITableField field) {
     IColumn<?>[] columns = field.getTable().getColumns();
     IMenu[] menus = field.getTable().getMenus();
-    TableDescriptor tableDesc = createTableDesc(columns, m_columnProperties);
-    TableDescriptor menuDesc = createTableDesc(menus, m_menuProperties);
+    TableDescriptor tableDesc = DocPropertyUtility.createTableDesc(columns, m_columnProperties, m_column_filters);
+    TableDescriptor menuDesc = DocPropertyUtility.createTableDesc(menus, m_menuProperties, null);
     String title = m_titleProperty.getText(field);
     return new TableFieldDescriptor(field.getClass().getName(), title, tableDesc, menuDesc);
-  }
-
-  private <T> TableDescriptor createTableDesc(T[] scoutElement, List<IDocProperty<T>> properties) {
-    final List<String[]> rows = new ArrayList<String[]>();
-    for (T c : scoutElement) {
-      String[] row = DocPropertyUtility.getPropertyRow(properties, c);
-      rows.add(row);
-    }
-    String[][] rowArray = CollectionUtility.toArray(rows, String[].class);
-    String[] headers = DocPropertyUtility.getHeaders(properties);
-    return new TableDescriptor(rowArray, headers);
   }
 
   public List<TableFieldDescriptor> getTableFieldDescriptors() {

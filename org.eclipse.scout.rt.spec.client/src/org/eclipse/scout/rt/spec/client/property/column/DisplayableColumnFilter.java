@@ -8,26 +8,24 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property;
+package org.eclipse.scout.rt.spec.client.property.column;
+
+import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
+import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 
 /**
- * A property of a scout model object of type <code>T</code> that should be documented.
- * <p>
- * E.g. the label of a <code>IFormField</code> should appear in the documentation table with table header "Label" and
- * the label of the respective form field as cell text.
- * </p>
+ * A filter accepting only displayable columns.
  */
-public interface IDocProperty<T> {
+public class DisplayableColumnFilter implements IDocFilter<IColumn> {
 
   /**
-   * @return header description for a this property
+   * @param column
+   *          (may not be <code>null</code>)
+   * @return true for displayable column
    */
-  public String getHeader();
-
-  /**
-   * @param object
-   * @return a documentation text for a scout model object
-   */
-  public String getText(T object);
+  @Override
+  public boolean accept(IColumn c) {
+    return c.isDisplayable();
+  }
 
 }

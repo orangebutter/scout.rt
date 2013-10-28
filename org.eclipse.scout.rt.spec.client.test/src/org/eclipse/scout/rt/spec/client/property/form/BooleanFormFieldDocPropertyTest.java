@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import org.eclipse.scout.rt.client.ui.form.fields.AbstractFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.shared.TEXTS;
+import org.eclipse.scout.rt.spec.client.property.AbstractBooleanDocProperty;
 import org.eclipse.scout.rt.spec.client.property.form.field.BooleanFormFieldProperty;
 import org.junit.Test;
 
@@ -32,9 +33,10 @@ public class BooleanFormFieldDocPropertyTest {
     IFormField mandatoryField = new AbstractFormField() {
     };
     mandatoryField.setMandatory(true);
-    BooleanFormFieldProperty p = new BooleanFormFieldProperty(IFormField.PROP_MANDATORY, "m");
+    AbstractBooleanDocProperty<IFormField> p = new BooleanFormFieldProperty(IFormField.PROP_MANDATORY, "m");
 
     String actualText = p.getText(mandatoryField);
+
     String expectedText = TEXTS.get(BooleanFormFieldProperty.DOC_ID_TRUE);
     assertEquals("Boolean Doc Text Invalid", expectedText, actualText);
   }
@@ -47,11 +49,10 @@ public class BooleanFormFieldDocPropertyTest {
   public void testMandatoryFalseText() {
     IFormField mandatoryField = new AbstractFormField() {
     };
-    BooleanFormFieldProperty p = new BooleanFormFieldProperty(IFormField.PROP_MANDATORY, "m");
+    AbstractBooleanDocProperty<IFormField> p = new BooleanFormFieldProperty(IFormField.PROP_MANDATORY, "m");
 
     String actualText = p.getText(mandatoryField);
     String expectedText = TEXTS.get(BooleanFormFieldProperty.DOC_ID_FALSE);
     assertEquals("Boolean Doc Text Invalid", expectedText, actualText);
   }
-
 }

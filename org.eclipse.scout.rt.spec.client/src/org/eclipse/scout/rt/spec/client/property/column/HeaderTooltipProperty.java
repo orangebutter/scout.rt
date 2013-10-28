@@ -8,25 +8,24 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property;
+package org.eclipse.scout.rt.spec.client.property.column;
 
+import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.shared.TEXTS;
+import org.eclipse.scout.rt.spec.client.property.AbstractNamedDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
- * An {@link IDocProperty} with the fully qualified class name as text.
+ * Doc Property for the tooltip of the header cell.
  */
-public class TypeProperty<T> extends AbstractNamedDocProperty<T> implements IDocProperty<T> {
+public class HeaderTooltipProperty extends AbstractNamedDocProperty<IColumn> implements IDocProperty<IColumn> {
 
-  public TypeProperty() {
-    super(TEXTS.get("org.eclipse.scout.rt.spec.type"));
+  public HeaderTooltipProperty() {
+    super(TEXTS.get("org.eclipse.scout.rt.spec.tooltip"));
   }
 
-  /**
-   * @return fully qualified class name.
-   */
   @Override
-  public String getText(T object) {
-    return object.getClass().getName();
+  public String getText(IColumn column) {
+    return column.getHeaderCell().getTooltipText();
   }
-
 }

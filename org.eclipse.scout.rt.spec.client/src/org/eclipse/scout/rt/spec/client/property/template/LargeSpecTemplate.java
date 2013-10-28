@@ -33,7 +33,7 @@ public class LargeSpecTemplate extends DefaultSpecTemplate {
     List<IDocProperty<IFormField>> propertyTemplate = new ArrayList<IDocProperty<IFormField>>();
     propertyTemplate.add(new IdFormFieldProperty());
     propertyTemplate.add(new TextFormFieldProperty(IFormField.PROP_LABEL, TEXTS.get("org.eclipse.scout.rt.spec.label")));
-    propertyTemplate.add(new SimpleTypeProperty<IFormField>(TEXTS.get("org.eclipse.scout.rt.spec.type")));
+    propertyTemplate.add(new SimpleTypeProperty<IFormField>());
     propertyTemplate.add(new TextFormFieldProperty(IStringField.PROP_MAX_LENGTH, TEXTS.get("org.eclipse.scout.rt.spec.length")));
     propertyTemplate.add(new BooleanFormFieldProperty(IFormField.PROP_MANDATORY, TEXTS.get("org.eclipse.scout.rt.spec.mandatory")));
     propertyTemplate.add(new BooleanFormFieldProperty(IFormField.PROP_ENABLED, TEXTS.get("org.eclipse.scout.rt.spec.enabled")));

@@ -73,10 +73,9 @@ public class WikimediaFormWriter {
     List<TableFieldDescriptor> tableFields = m_formDesc.getTableFields();
     for (TableFieldDescriptor t : tableFields) {
       fieldWriter.appendHeading(t.getTitle(), 3);
-      fieldWriter.appendHeading(TEXTS.get("org.eclipse.scout.rt.spec.menus"), 4);
-      fieldWriter.appendTable(t.getMenuProperties());
-      fieldWriter.appendHeading(TEXTS.get("org.eclipse.scout.rt.spec.columns"), 4);
-      fieldWriter.appendTable(t.getColumnProperties());
+      fieldWriter.appendWithHeading(t.getMenuProperties(), TEXTS.get("org.eclipse.scout.rt.spec.menus"), 4);
+      fieldWriter.appendWithHeading(t.getColumnProperties(), TEXTS.get("org.eclipse.scout.rt.spec.columns"), 4);
     }
   }
+
 }

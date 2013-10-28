@@ -158,4 +158,17 @@ public class WikimediaWriter {
     m_writer.append("[[Image:" + imageName + "|" + scale + "px]]");
     m_writer.append(NEWLINE);
   }
+
+  /**
+   * @param fieldWriter
+   * @param t
+   * @throws ProcessingException
+   * @throws IOException
+   */
+  public void appendWithHeading(TableDescriptor table, String title, int titleLevel) throws ProcessingException, IOException {
+    if (table.getCellTexts().length > 0) {
+      appendHeading(title, titleLevel);
+      appendTable(table);
+    }
+  }
 }

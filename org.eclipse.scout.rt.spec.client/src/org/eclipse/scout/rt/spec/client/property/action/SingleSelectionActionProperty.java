@@ -8,25 +8,27 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property;
+package org.eclipse.scout.rt.spec.client.property.action;
 
+import org.eclipse.scout.rt.client.ui.action.IAction;
 import org.eclipse.scout.rt.shared.TEXTS;
+import org.eclipse.scout.rt.spec.client.property.AbstractBooleanDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
- * An {@link IDocProperty} with the fully qualified class name as text.
+ *
  */
-public class TypeProperty<T> extends AbstractNamedDocProperty<T> implements IDocProperty<T> {
-
-  public TypeProperty() {
-    super(TEXTS.get("org.eclipse.scout.rt.spec.type"));
-  }
+public class SingleSelectionActionProperty<T extends IAction> extends AbstractBooleanDocProperty<T> implements IDocProperty<T> {
 
   /**
-   * @return fully qualified class name.
+   * @param name
    */
-  @Override
-  public String getText(T object) {
-    return object.getClass().getName();
+  public SingleSelectionActionProperty() {
+    super(TEXTS.get("org.eclipse.scout.rt.spec.action.singleSelection"));
   }
 
+  @Override
+  public String getText(T action) {
+    return getBooleanText(action.isSingleSelectionAction());
+  }
 }

@@ -48,14 +48,14 @@ public class FormSpecGenerator {
 
   private TableDescriptor getFormSpec(IForm form, List<IDocProperty<IForm>> properties) {
     List<String[]> rows = new ArrayList<String[]>();
-    rows.add(DocPropertyUtility.getPropertyRow(properties, form));
+    rows.add(DocPropertyUtility.getTexts(form, properties));
     String[][] rowArray = CollectionUtility.toArray(rows, String[].class);
     String[] headers = DocPropertyUtility.getHeaders(properties);
     return new TableDescriptor(rowArray, headers);
   }
 
   private List<TableFieldDescriptor> getTableFields(IForm form) {
-    TableSpecsVisitor visitor = new TableSpecsVisitor(m_template.getColumnProperties(), m_template.getMenuProperties(), m_template.getTableTitleProperty());
+    TableSpecsVisitor visitor = new TableSpecsVisitor(m_template.getColumnProperties(), m_template.getColumnFilters(), m_template.getMenuProperties(), m_template.getTableTitleProperty());
     form.visitFields(visitor);
     return visitor.getTableFieldDescriptors();
   }

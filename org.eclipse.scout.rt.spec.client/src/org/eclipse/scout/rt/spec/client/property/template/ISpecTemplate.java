@@ -17,6 +17,7 @@ import org.eclipse.scout.rt.client.ui.basic.table.columns.IColumn;
 import org.eclipse.scout.rt.client.ui.form.IForm;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
 import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
+import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
@@ -51,6 +52,13 @@ public interface ISpecTemplate {
    * @return a list of properties that should be generated.
    */
   public List<IDocProperty<IColumn>> getColumnProperties();
+
+  /**
+   * Configuration for filtering {@link IColumn}. Only the columns accepted by all filters are generated.
+   * 
+   * @return a list of filters.
+   */
+  public List<IDocFilter<IColumn>> getColumnFilters();
 
   /**
    * Configuration for documenting {@link IMenu}.

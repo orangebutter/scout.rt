@@ -8,21 +8,28 @@
  * Contributors:
  *     BSI Business Systems Integration AG - initial API and implementation
  ******************************************************************************/
-package org.eclipse.scout.rt.spec.client.property;
+package org.eclipse.scout.rt.spec.client.property.action;
+
+import org.eclipse.scout.rt.client.ui.action.IAction;
+import org.eclipse.scout.rt.shared.TEXTS;
+import org.eclipse.scout.rt.spec.client.property.AbstractBooleanDocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
 /**
- * An {@link IDocProperty} with the simple class name as text.
+ *
  */
-public class SimpleTypeProperty<T> extends TypeProperty<T> {
+public class MultiselectionActionProperty<T extends IAction> extends AbstractBooleanDocProperty<T> implements IDocProperty<T> {
 
   /**
-   * @param object
-   *          object to compare against the filter
-   * @return <code>true</code> if the object is accepted by the filter.
+   * @param name
    */
+  public MultiselectionActionProperty() {
+    super(TEXTS.get("org.eclipse.scout.rt.spec.action.multiSelection"));
+  }
+
   @Override
   public String getText(T object) {
-    return object.getClass().getSimpleName();
+    return getBooleanText(object.isMultiSelectionAction());
   }
 
 }

@@ -4,7 +4,7 @@ import org.eclipse.scout.rt.client.ui.IDocumentable;
 import org.eclipse.scout.rt.shared.TEXTS;
 
 /**
- * TODO replace doc properties
+ * A {@link IDocProperty} for the documentation text defined by {@link IDocumentable#getDoc}.
  */
 public class DocProperty<T extends IDocumentable> extends AbstractNamedDocProperty<T> implements IDocProperty<T> {
 
@@ -13,15 +13,11 @@ public class DocProperty<T extends IDocumentable> extends AbstractNamedDocProper
   }
 
   /**
-   * @param name
+   * The documentation text of a scout model object without enclosing html tags.
    */
-  public DocProperty(String name) {
-    super(name);
-  }
-
   @Override
-  public String getText(T d) {
-    String doc = d.getDoc();
+  public String getText(T object) {
+    String doc = object.getDoc();
     if (doc != null) {
       doc = doc.replaceAll("</html>", "");
       doc = doc.replaceAll("<html>", "");

@@ -11,23 +11,14 @@
 package org.eclipse.scout.rt.spec.client.property;
 
 /**
- * A property of a scout model object of type <code>T</code> that should be documented.
- * <p>
- * E.g. the label of a <code>IFormField</code> should appear in the documentation table with table header "Label" and
- * the label of the respective form field as cell text.
- * </p>
+ * Interface for documentation filters. Accept or reject Items.
  */
-public interface IDocProperty<T> {
-
-  /**
-   * @return header description for a this property
-   */
-  public String getHeader();
+public interface IDocFilter<T> {
 
   /**
    * @param object
-   * @return a documentation text for a scout model object
+   * @return true, if accepted, false otherwise
    */
-  public String getText(T object);
+  public boolean accept(T object);
 
 }

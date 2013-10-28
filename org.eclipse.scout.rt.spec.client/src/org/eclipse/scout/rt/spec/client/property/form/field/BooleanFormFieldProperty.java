@@ -2,14 +2,10 @@ package org.eclipse.scout.rt.spec.client.property.form.field;
 
 import org.eclipse.scout.commons.StringUtility;
 import org.eclipse.scout.rt.client.ui.form.fields.IFormField;
-import org.eclipse.scout.rt.shared.TEXTS;
-import org.eclipse.scout.rt.spec.client.property.AbstractNamedDocProperty;
+import org.eclipse.scout.rt.spec.client.property.AbstractBooleanDocProperty;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 
-public class BooleanFormFieldProperty extends AbstractNamedDocProperty<IFormField> implements IDocProperty<IFormField> {
-  public static final String DOC_ID_TRUE = "org.eclipse.scout.rt.spec.true";
-  public static final String DOC_ID_FALSE = "org.eclipse.scout.rt.spec.false";
-
+public class BooleanFormFieldProperty extends AbstractBooleanDocProperty<IFormField> implements IDocProperty<IFormField> {
   private final String m_propertyName;
 
   public BooleanFormFieldProperty(String propertyName, String header) {
@@ -24,8 +20,9 @@ public class BooleanFormFieldProperty extends AbstractNamedDocProperty<IFormFiel
    */
   @Override
   public String getText(IFormField field) {
-    boolean b = Boolean.parseBoolean(StringUtility.nvl(field.getProperty(m_propertyName), "false"));
-    return b ? TEXTS.get(DOC_ID_TRUE) : TEXTS.get(DOC_ID_FALSE);
+    Object property = field.getProperty(m_propertyName);
+    boolean b = Boolean.parseBoolean(StringUtility.nvl(property, "false"));
+    return getBooleanText(b);
   }
 
 }

@@ -22,11 +22,19 @@ import org.eclipse.scout.rt.client.ui.form.fields.stringfield.IStringField;
 import org.eclipse.scout.rt.client.ui.form.fields.tablefield.ITableField;
 import org.eclipse.scout.rt.shared.TEXTS;
 import org.eclipse.scout.rt.spec.client.property.DocProperty;
+import org.eclipse.scout.rt.spec.client.property.IDocFilter;
 import org.eclipse.scout.rt.spec.client.property.IDocProperty;
 import org.eclipse.scout.rt.spec.client.property.SimpleTypeProperty;
 import org.eclipse.scout.rt.spec.client.property.TypeProperty;
+import org.eclipse.scout.rt.spec.client.property.action.EmptySpaceActionProperty;
+import org.eclipse.scout.rt.spec.client.property.action.MultiselectionActionProperty;
+import org.eclipse.scout.rt.spec.client.property.action.SingleSelectionActionProperty;
 import org.eclipse.scout.rt.spec.client.property.action.TextActionProperty;
+import org.eclipse.scout.rt.spec.client.property.column.ColumnWidthProperty;
+import org.eclipse.scout.rt.spec.client.property.column.DisplayableColumnFilter;
+import org.eclipse.scout.rt.spec.client.property.column.HeaderTooltipProperty;
 import org.eclipse.scout.rt.spec.client.property.column.LabelColumnProperty;
+import org.eclipse.scout.rt.spec.client.property.column.SortColumnProperty;
 import org.eclipse.scout.rt.spec.client.property.form.TitleFormProperty;
 import org.eclipse.scout.rt.spec.client.property.form.field.BooleanFormFieldProperty;
 import org.eclipse.scout.rt.spec.client.property.form.field.TableFieldTypeAndLabelProperty;
@@ -62,10 +70,20 @@ public class DefaultSpecTemplate implements ISpecTemplate {
   @Override
   public List<IDocProperty<IColumn>> getColumnProperties() {
     List<IDocProperty<IColumn>> propertyTemplate = new ArrayList<IDocProperty<IColumn>>();
+    propertyTemplate.add(new SortColumnProperty());
     propertyTemplate.add(new LabelColumnProperty());
     propertyTemplate.add(new SimpleTypeProperty<IColumn>());
+    propertyTemplate.add(new ColumnWidthProperty());
+    propertyTemplate.add(new HeaderTooltipProperty());
     propertyTemplate.add(new DocProperty<IColumn>());
     return propertyTemplate;
+  }
+
+  @Override
+  public List<IDocFilter<IColumn>> getColumnFilters() {
+    List<IDocFilter<IColumn>> columnFilters = new ArrayList<IDocFilter<IColumn>>();
+    columnFilters.add(new DisplayableColumnFilter());
+    return columnFilters;
   }
 
   @Override
@@ -74,6 +92,9 @@ public class DefaultSpecTemplate implements ISpecTemplate {
     propertyTemplate.add(new TextActionProperty<IMenu>(IAction.PROP_TEXT, TEXTS.get("org.eclipse.scout.rt.spec.label")));
     propertyTemplate.add(new SimpleTypeProperty<IMenu>());
     propertyTemplate.add(new DocProperty<IMenu>());
+    propertyTemplate.add(new EmptySpaceActionProperty<IMenu>());
+    propertyTemplate.add(new SingleSelectionActionProperty<IMenu>());
+    propertyTemplate.add(new MultiselectionActionProperty<IMenu>());
     return propertyTemplate;
   }
 
